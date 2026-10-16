@@ -26,8 +26,8 @@ export class WorldMapScene extends Phaser.Scene {
     for (const [worldIndex, world] of WORLDS.entries()) {
       const x = 64 + (worldIndex % 2) * 640;
       const y = 128 + Math.floor(worldIndex / 2) * 278;
-      const panel = this.add.rectangle(x, y, 560, 240, world.palette.sky, 0.82).setOrigin(0).setStrokeStyle(2, world.palette.accent, 0.62);
-      const glow = this.add.rectangle(x + 1, y + 1, 558, 4, world.palette.warm, 0.8).setOrigin(0);
+      this.add.rectangle(x, y, 560, 240, world.palette.sky, 0.82).setOrigin(0).setStrokeStyle(2, world.palette.accent, 0.62);
+      this.add.rectangle(x + 1, y + 1, 558, 4, world.palette.warm, 0.8).setOrigin(0);
       this.add.text(x + 20, y + 17, world.name[language], { fontFamily: 'Georgia,serif', fontSize: '20px', fontStyle: 'bold', color: '#f1f5ff' });
       this.add.text(x + 20, y + 49, (language === 'pl' ? 'Strażnik: ' : 'Warden: ') + world.boss[language], { fontFamily: 'system-ui,sans-serif', fontSize: '12px', color: '#a9c1df' });
       this.add.circle(x + 515, y + 34, 10, world.palette.accent, 0.7).setStrokeStyle(2, world.palette.warm, 0.8);
