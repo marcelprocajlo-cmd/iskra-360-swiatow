@@ -14,11 +14,11 @@ Otwórz `index.html` w nowoczesnej przeglądarce. Gra nie wymaga zależności an
 - **Skok przy ścianie** — wall jump.
 - Na telefonie używaj przycisków ekranowych. Przycisk **Sterowanie** otwiera pomoc.
 
-## Tryb 3D i animacje
-- Trójwymiarowa scena WebGL z oświetleniem, metalicznymi materiałami, poświatą i głębią.
-- Model Iskry z osobnymi przegubami rąk i nóg, ruchomą głową i anteną, animacją biegu, skoku oraz rozciągnięciem podczas dashu.
-- Trójwymiarowe platformy, kryształy, portale, pułapki i modele przeciwników/bossów.
-- Renderer 3D korzysta z Three.js z CDN; gdy biblioteka lub WebGL są niedostępne, pozostaje tryb Canvas 2D. Przycisk **3D: ON/OFF** pozwala przełączać widok.
+## Modele 3D na planszy 2D
+- Platformówka, tła, platformy i pułapki pozostają w klasycznym widoku 2D.
+- Three.js renderuje jako przezroczystą nakładkę wyłącznie przestrzenny model Iskry, przeciwników, kryształów i portalu.
+- Iskra ma przegubowe kończyny, animację biegu i skoku, ruch głowy i anteny oraz efekt dashu.
+- Przycisk **Modele 3D: ON/OFF** przełącza modele 3D; oryginalny sprite 2D wraca po wyłączeniu. Tryb 3D wymaga CDN i WebGL.
 
 ## Oprawa graficzna
 - Model Iskry z warstwowym pancerzem, anteną, rdzeniem, kończynami i efektami świetlnymi.
@@ -53,4 +53,4 @@ Każdy ukończony etap ma osobny snapshot i raport:
 Wykonywano kontrolę składni JavaScript i testy obecności kluczowych funkcji. Etap 07 obejmuje też test automatyczny na atrapach DOM/Canvas oraz przełączenie wszystkich 360 poziomów. To nie zastępuje testu w prawdziwej przeglądarce ani na telefonie; listę testów opisuje `TEST_PLAN.md`.
 
 ## Stack
-HTML, CSS, JavaScript, Canvas 2D (fallback) oraz Three.js 0.160 z CDN dla sceny 3D.
+HTML, CSS, JavaScript, Canvas 2D dla planszy oraz Three.js 0.160 z CDN do nakładki modeli 3D.
