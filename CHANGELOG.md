@@ -1,9 +1,15 @@
 # Changelog
 
+## Etap 08 — oprawa graficzna i modelowanie
+- Rozbudowano rysowany model Iskry: antena, pancerz, wizjer, rdzeń energetyczny, ramiona i nogi.
+- Dodano 12 wariantów panoram biomów z paralaksą i charakterystycznymi sylwetkami.
+- Przebudowano rysunki przeciwników i bossów.
+- Ulepszono wizualny styl paneli, cienie, hover i obrysy klawiaturowe.
+- Przetestowano składnię oraz symulowane przełączanie 360 poziomów.
+
 ## Etap 07 — przygotowanie do wydania
 - Uzupełniono dokumentację, archiwum wydań i plan testów.
-- Dodano czytelny efekt wizualny ataku, poprawiono kierunek wiatru w pustynnych strefach i śliskość lodowych platform.
-- Wykonano symulowany test uruchomienia, obsługi interfejsu i przełączania 360 poziomów.
+- Dopracowano śliskość lodowych platform, kierunek wiatru i efekt ataku.
 
 ## Etap 06 — osiągnięcia i statystyki
 - Sześć osiągnięć, statystyki gry, kopia zapasowa i odzyskiwanie zapisu.
