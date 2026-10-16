@@ -21,3 +21,17 @@ Zielone testy jednostkowe nie dowodzą jakości wizualnej, poprawności dotyku/p
 ## Przebudowa — fundament (commit 4806daa)
 
 Nowa architektura została dodana na gałęzi `feat/phaser-rewrite`: Vite/Phaser/TypeScript, kontroler ze stałym krokiem, migracja zapisu, słowniki PL/EN, dane 4×5 poziomów oraz prototyp pierwszej sceny. Build i testy CI są w trakcie weryfikacji; nie należy traktować tego prototypu jako pełnej gry ani finalnej oprawy.
+
+
+## Phaser rewrite review — October 2026
+
+**CI verified on commit 83df18f:** Vite/TypeScript build, Vitest modules, legacy regression harness, ESLint, level-structure validation and Playwright Chromium smoke passed. The browser smoke checks menu, first-world start, world-map navigation and a mobile-sized viewport. Screenshots are in the `iskra-visual-smoke` workflow artifact.
+
+### Known gaps (not to be marked as done)
+- No human visual review of the screenshots or real-device control-feel review has been performed.
+- The campaign currently reuses five layout patterns with biome-specific variations; the 20 level definitions are not yet 20 bespoke, polished layouts.
+- Level validation checks data structure/spawn/exit, not full reachability through jump, glide and dash.
+- Boss phase logic, full hazard set and shield integration, three unique enemy archetypes per world, secrets/friend rescue, cosmetic shop, achievements, daily challenge, infinite mode, rhythm auto-run and speedrun ghost are incomplete.
+- No measured FPS/performance report yet. The rewrite has not been deployed to a public preview URL.
+
+Run locally with Node 22.12+: `npm install && npm run dev`.
