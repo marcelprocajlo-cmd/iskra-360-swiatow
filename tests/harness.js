@@ -88,7 +88,7 @@ function createHarness(html, initialStorage = {}) {
   const hookAt = inline[1].lastIndexOf('})();');
   if (hookAt < 0) throw new Error('Nie można wstrzyknąć hooka testowego do IIFE gry');
   const testableSource = inline[1].slice(0, hookAt) +
-    'window.__testEval = (expression) => eval(expression);\\n' +
+    'window.__testEval = (expression) => eval(expression);' +
     inline[1].slice(hookAt);
   vm.runInContext(testableSource, sandbox, { timeout: 3000, filename: 'index.inline.js' });
 
