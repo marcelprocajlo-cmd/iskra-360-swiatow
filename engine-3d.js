@@ -106,10 +106,26 @@
     objects=[];enemies=[];platformMeshes=[];hazardMeshes=[];portal=null;portalCore=null;
   }
   function add(o){objects.push(o);return o;}
+  function randSeed(n){const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);}
   function buildBackdrop(s,look){
     scene.background=new T.Color(look.sky);
-    const backMat=new T.MeshBasicMaterial({color:look.sky});
-    add(box(s.worldW/2,270,-180,s.worldW+1600,1000,12,backMat));
+    // Atmospheric sky gradient replaces the flat navy wall; biome-tinted haze drifts behind the playfield.
+    const skyTop=new T.Color(look.sky).lerp(new T.Color(look.glow),.48);
+    const skyBottom=new T.Color(look.sky).lerp(new T.Color(look.far),.72);
+    const skyMat=new T.ShaderMaterial({
+      uniforms:{topColor:{value:skyTop},bottomColor:{value:skyBottom},glowColor:{value:new T.Color(look.top)},time:{value:0},biome:{value:s.biome}},
+      vertexShader:'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      fragmentShader:'varying vec2 vUv; uniform vec3 topColor; uniform vec3 bottomColor; uniform vec3 glowColor; uniform float time; uniform float biome; void main(){float h=smoothstep(0.0,1.0,vUv.y); vec3 col=mix(bottomColor,topColor,h); float glow=exp(-pow((vUv.x-(0.26+0.08*sin(time*0.12)))*3.1,2.0)-pow((vUv.y-0.68)*2.3,2.0)); col=mix(col,glowColor,glow*(0.12+0.035*sin(time*0.3))); float haze=exp(-pow((vUv.y-0.28)*5.0,2.0)); col=mix(col,glowColor,haze*0.09); gl_FragColor=vec4(col,1.0);}'
+    });
+    const sky=add(make(new T.PlaneGeometry(s.worldW+1800,1100),skyMat));sky.position.set(s.worldW/2,275,-220);sky.userData.skyShader=true;
+    // Layered mist banks and distant cloud formations create real depth instead of a flat backdrop.
+    const mistMat=new T.MeshBasicMaterial({color:look.top,transparent:true,opacity:.075,depthWrite:false});
+    for(let i=0;i<9;i++){
+      const cloud=new T.Group();world.add(cloud);add(cloud);
+      const x=i*(s.worldW/8)+randSeed(s.level+i)*70;
+      for(let j=0;j<4;j++){const puff=make(new T.SphereGeometry(22+j%2*8,12,8),mistMat,cloud);puff.scale.set(1.9,.55,.18);puff.position.set((j-1.5)*25,(j%2)*7,0);}
+      cloud.position.set(x,105+(i%3)*34,-115);cloud.userData.cloudDrift=true;cloud.userData.baseX=x;cloud.userData.phase=i*1.4;
+    }
     const makeRidge=(z,base,peak,color,seed)=>{
       const shape=new T.Shape();shape.moveTo(0,0);shape.lineTo(0,base);
       let r=(seed>>>0)||1,x=0;while(x<s.worldW+300){r=(r*1664525+1013904223)>>>0;const step=100+(r%170);r=(r*1664525+1013904223)>>>0;shape.lineTo(x+step*.45,base+((r/4294967296)*peak));shape.lineTo(x+step,base);x+=step;}
@@ -140,6 +156,33 @@
       else if(s.biome===5){const wreck=add(box(x,base+35,-70,60,55,15,landmarkMat));wreck.rotation.z=(rand()-.5)*.4;add(box(x,base+62,-62,20,5,3,glowMat));}
       else {const arch=add(make(new T.TorusGeometry(28,5,7,20),landmarkMat));arch.position.set(x,base+72,-72);arch.rotation.x=Math.PI/2;add(box(x,base+20,-72,9,45,10,landmarkMat));}
     }
+    // Large, readable biome landmarks: silhouettes, light sources and animated set pieces.
+    if(s.biome===0){
+      for(let i=0;i<Math.ceil(s.worldW/500);i++){const x=170+i*500;const gear=add(make(new T.TorusGeometry(34,5,8,16),glowMat));gear.position.set(x,330,-83);gear.userData.spin=.009;gear.userData.baseY=330;gear.userData.floaty=true;gear.userData.phase=i;for(let k=0;k<8;k++){const spoke=add(box(x,330,-82,3,62,2,landmarkMat));spoke.rotation.z=k*Math.PI/4;}}
+    }else if(s.biome===1||s.biome===8){
+      for(let i=0;i<Math.ceil(s.worldW/190);i++){const x=i*190+80,h=95+rand()*65;add(box(x,80+h/2,-86,10,h,9,landmarkMat));for(let j=0;j<3;j++){const leaf=add(make(new T.SphereGeometry(27-j*3,12,9),new T.MeshStandardMaterial({color:s.biome===8?0x79d96b:0x2c9b68,roughness:.9})));leaf.position.set(x+(j-1)*18,80+h-20+j*11,-82);leaf.scale.set(1.2,.8,.55);}if(s.biome===8){const bloom=add(make(new T.SphereGeometry(12,12,8),glowMat));bloom.position.set(x,80+h+18,-70);bloom.userData.floaty=true;bloom.userData.baseY=80+h+18;bloom.userData.phase=rand()*6;}}
+    }else if(s.biome===2){
+      for(let i=0;i<Math.ceil(s.worldW/260);i++){const dune=add(make(new T.SphereGeometry(100,16,8),new T.MeshBasicMaterial({color:i%2?0xc17d58:0x9b5b4b})));dune.position.set(i*260+80,15,-115);dune.scale.set(1.7,.5,.12);}
+    }else if(s.biome===3){
+      for(let i=0;i<Math.ceil(s.worldW/170);i++){const x=i*170+70,h=90+rand()*110;const crystal=add(make(new T.OctahedronGeometry(24+rand()*12,1),new T.MeshStandardMaterial({color:0x8edfff,emissive:0x2f9dff,emissiveIntensity:.65,transparent:true,opacity:.75,metalness:.45,roughness:.18})));crystal.position.set(x,75+h/2,-75);crystal.scale.set(.65,2.3,.5);crystal.userData.floaty=true;crystal.userData.baseY=75+h/2;crystal.userData.phase=rand()*6;crystal.userData.spin=.002;}
+    }else if(s.biome===4||s.biome===9){
+      for(let i=0;i<Math.ceil(s.worldW/115);i++){const x=i*115+45,h=100+rand()*150,w=28+rand()*25;const tower=add(box(x,55+h/2,-92,w,h,14,landmarkMat));tower.rotation.z=(rand()-.5)*.03;for(let j=0;j<4;j++){const strip=add(box(x,65+j*h/4,-83,w*.68,2,2,glowMat));strip.userData.pulse=true;strip.userData.phase=i+j;}}
+    }else if(s.biome===5){
+      for(let i=0;i<Math.ceil(s.worldW/230);i++){const x=i*230+80;const wheel=add(make(new T.TorusGeometry(30,7,7,14),landmarkMat));wheel.position.set(x,105,-78);wheel.rotation.x=.3;wheel.userData.spin=i%2?.012:-.008;for(let k=0;k<6;k++){const spoke=add(box(x,105,-75,3,54,2,glowMat));spoke.rotation.z=k*Math.PI/3;}}
+    }else if(s.biome===6){
+      for(let i=0;i<Math.ceil(s.worldW/200);i++){const cloud=add(new T.Group());for(let j=0;j<5;j++){const puff=make(new T.SphereGeometry(22+rand()*15,12,8),new T.MeshStandardMaterial({color:0xe5f7ff,transparent:true,opacity:.7,roughness:1}),cloud);puff.scale.set(1.35,.65,.55);puff.position.set((j-2)*23,rand()*10,0);}cloud.position.set(i*200+80,90+rand()*120,-55);cloud.userData.cloudDrift=true;cloud.userData.baseX=cloud.position.x;cloud.userData.phase=rand()*6;}
+    }else if(s.biome===7){
+      for(let i=0;i<Math.ceil(s.worldW/280);i++){const x=i*280+90;const vent=add(make(new T.ConeGeometry(55,125,7),landmarkMat));vent.position.set(x,75,-80);const lava=add(make(new T.TorusGeometry(17,5,8,18),new T.MeshBasicMaterial({color:0xff542b,transparent:true,opacity:.9})));lava.position.set(x,137,-74);lava.rotation.x=.2;lava.userData.pulse=true;lava.userData.phase=i;}
+    }else if(s.biome===10){
+      for(let i=0;i<Math.ceil(s.worldW/220);i++){const ring=add(make(new T.TorusGeometry(34+rand()*18,2.5,7,28),glowMat));ring.position.set(i*220+95,100+rand()*270,-66);ring.rotation.set(rand()*2,rand()*2,rand()*2);ring.userData.floaty=true;ring.userData.baseY=ring.position.y;ring.userData.phase=rand()*6;ring.userData.spin=.015;}
+    }else if(s.biome===11){
+      const core=add(make(new T.IcosahedronGeometry(70,2),new T.MeshStandardMaterial({color:0x1b7384,emissive:0x28f3d6,emissiveIntensity:1.3,metalness:.6,roughness:.22,wireframe:true})));core.position.set(s.worldW*.52,305,-80);core.userData.floaty=true;core.userData.baseY=305;core.userData.phase=0;core.userData.spin=.006;
+      for(let i=0;i<4;i++){const ring=add(make(new T.TorusGeometry(90+i*17,2.5,8,64),glowMat));ring.position.set(s.worldW*.52,305,-75);ring.rotation.set(i*.65,i*.42,0);ring.userData.spin=.002+i*.001;ring.userData.pulse=true;ring.userData.phase=i;}
+    }
+    // Atmospheric particles are different for every realm: snow, embers, sand, spores and energy motes.
+    const particleCount=s.biome===3||s.biome===7||s.biome===8||s.biome===10?95:64;
+    const particleColors=[look.top,look.glow,0xffffff];
+    for(let i=0;i<particleCount;i++){const x=rand()*s.worldW,y=65+rand()*420,z=-34-rand()*58;const size=s.biome===7?1.5+rand()*2.8:1+rand()*2.2;const mote=add(make(new T.SphereGeometry(size,6,5),new T.MeshBasicMaterial({color:particleColors[i%3],transparent:true,opacity:.25+rand()*.6})));mote.position.set(x,y,z);mote.userData.atmosphere=true;mote.userData.baseY=y;mote.userData.baseX=x;mote.userData.phase=rand()*Math.PI*2;mote.userData.drift=.2+rand()*.8;mote.userData.kind=s.biome;}
     for(let i=0;i<36;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
     // Floating crystal clusters add parallax-like depth and an animated silhouette per world.
     for(let i=0;i<Math.ceil(s.worldW/230);i++){
@@ -182,14 +225,14 @@
       box(p.w*.31,p.h/2-8,20,Math.max(7,p.w*.09),2,3,sideMat,group);
       for(let j=-1;j<=1;j++){if(p.w>100)box(j*p.w*.27,0,20,2,p.h-5,1,sideMat,group);}
       // Deterministic grass tufts, scattered pebbles and occasional biome flowers.
-      const tuftCount=Math.max(2,Math.floor(p.w/43));
+      const tuftCount=Math.max(4,Math.floor(p.w/22));
       for(let gi=0;gi<tuftCount;gi++){
         const gx=-p.w*.43+(gi+.5)*(p.w*.86/tuftCount);
         const hash=((Math.floor(p.x+31)*17+gi*37+pi*13)>>>0);
         if(hash%5===0&&tuftCount>2)continue;
         const h1=5+(hash%7),h2=4+((hash>>>3)%6);
-        const blade1=make(grassGeo,bladeMat,group);blade1.scale.set(.72,h1/9,.72);blade1.position.set(gx,p.h/2+1+h1/2,24);blade1.rotation.z=((hash%9)-4)*.07;
-        const blade2=make(grassGeo,bladeMat,group);blade2.scale.set(.62,h2/9,.62);blade2.position.set(gx+3,p.h/2+1+h2/2,24.5);blade2.rotation.z=-.18;
+        const blade1=make(grassGeo,bladeMat,group);blade1.scale.set(.72,h1/9,.72);blade1.position.set(gx,p.h/2+1+h1/2,24);blade1.rotation.z=((hash%9)-4)*.07;blade1.userData.grassSway=true;blade1.userData.baseRot=blade1.rotation.z;blade1.userData.phase=hash*.13;
+        const blade2=make(grassGeo,bladeMat,group);blade2.scale.set(.62,h2/9,.62);blade2.position.set(gx+3,p.h/2+1+h2/2,24.5);blade2.rotation.z=-.18;blade2.userData.grassSway=true;blade2.userData.baseRot=-.18;blade2.userData.phase=hash*.13+1.7;
         if((s.biome===1||s.biome===8||s.biome===0||s.biome===11)&&hash%3===0){
           const fm=flowerMats[(hash>>>4)%flowerMats.length];
           const stem=box(gx+5,p.h/2+3.5,24,1,6,1,green,group);
@@ -269,7 +312,7 @@
     chestCore.scale.setScalar(1+Math.sin(s.tick*.16)*.12+(p.dash>0?.35:0));chestRing.rotation.z+=.025+(p.dash>0?.06:0);
     bootGlowL.material.emissiveIntensity=bootGlowR.material.emissiveIntensity=p.dash>0?2.5:.6;
     aura.position.copy(hero.position);aura.material.opacity=p.dash>0?.28:.11;aura.scale.setScalar(p.dash>0?2.5:1.8);
-    for(const o of objects){if(o.userData.floaty){o.position.y=o.userData.baseY+Math.sin(s.tick*.035+o.userData.phase)*7;o.rotation.y+=o.userData.spin||.005;o.rotation.z+=(o.userData.spin||.005)*.7;}const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.x=a.x;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
+    for(const o of objects){if(o.userData.skyShader&&o.material.uniforms)o.material.uniforms.time.value=s.tick*.016;if(o.userData.floaty){o.position.y=o.userData.baseY+Math.sin(s.tick*.035+o.userData.phase)*7;o.rotation.y+=o.userData.spin||.005;o.rotation.z+=(o.userData.spin||.005)*.7;}if(o.userData.cloudDrift){o.position.x=o.userData.baseX+Math.sin(s.tick*.008+o.userData.phase)*18;}if(o.userData.grassSway){o.rotation.z=o.userData.baseRot+Math.sin(s.tick*.09+o.userData.phase)*.12;}if(o.userData.atmosphere){const k=o.userData.kind,wind=k===2?.8:k===3?-.18:k===7?.45:k===10?-.35:.28;o.position.x=o.userData.baseX+Math.sin(s.tick*.018+o.userData.phase)*9+Math.sin(s.tick*.007+o.userData.phase)*s.tick*.0;o.position.y=o.userData.baseY+Math.sin(s.tick*.025+o.userData.phase)*9-s.tick*.02*o.userData.drift;if(o.position.y<45){o.position.y=490;o.position.x=o.userData.baseX;}o.position.x+=wind*.025;}if(o.userData.pulse&&o.material){o.material.opacity=.45+.4*(.5+.5*Math.sin(s.tick*.08+(o.userData.phase||0)));if(o.material.emissive)o.material.emissiveIntensity=.4+Math.sin(s.tick*.08+(o.userData.phase||0))*.5;}const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.x=a.x;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
     for(const g of platformMeshes){const p=g.userData.source;g.position.x=p.x+p.w/2;g.position.y=540-p.y-p.h/2;g.visible=!(p.crumbleGone>0);if(p.type==='crumble'){g.children.forEach(child=>{if(child.material===crackMat)child.material.emissiveIntensity=.8+Math.sin(s.tick*.22)*.8;});}}
     for(const g of hazardMeshes){const h=g.userData.source;g.position.x=h.x+h.w/2;g.position.y=540-h.y-h.h/2;g.visible=h.type!=='laser'||!!h.active;g.rotation.z=h.type==='wind'?Math.sin(s.tick*.04+h.phase)*.08:0;g.traverse(child=>{if(child.geometry&&child.geometry.type==='SphereGeometry'&&child.userData.phase!==undefined)child.position.y=Math.sin(s.tick*.1+child.userData.phase)*3;});}
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
