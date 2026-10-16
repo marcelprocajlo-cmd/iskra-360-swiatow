@@ -37,3 +37,12 @@
 ## Etap 01 — stabilność
 - Naprawiono nieprawidłowe znaki nowej linii w skrypcie.
 - Kryształy i kary walutowe są zapisywane natychmiast.
+
+
+## Debugowanie regresji — październik 2026
+- Dodano stały krok symulacji 60 Hz i poprawiono tarcie Pustyni Luster.
+- Naprawiono blokadę następnego poziomu, coyote time, kruszenie platform, nietykalność i granicę świata.
+- Zabezpieczono parsowanie zapisu i kopię zapasową; ruchome platformy przenoszą przypięte kryształy oraz kolce.
+- Rozdzielono logikę aktualizacji wrogów od renderowania modeli 3D, żeby AI działało także w trybie 3D.
+- Dodano `tests/regression.js`, `tests/harness.js` i raport `REVIEW.md`.
+- Usunięto globalne przepisywanie ścieżek z `vercel.json`, które mogło zwracać `index.html` zamiast plików JS i archiwów.
