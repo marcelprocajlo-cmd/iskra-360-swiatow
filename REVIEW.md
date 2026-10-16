@@ -8,6 +8,7 @@ W gałęzi `fix/regression-debug-2026-10` poprawiono:
 - tarcie w Pustyni Luster (poziomy 61–90), które mogło zwiększać prędkość po puszczeniu ruchu;
 - blokadę przycisku „Następny poziom” do czasu ukończenia bieżącego poziomu;
 - aktualizację AI i kolizji wrogów także wtedy, gdy renderowane są modele 3D;
+- zachowanie kolizji z bossem po trafieniu — trafienie nie wyłącza już kolizji z graczem;
 - okno nietykalności po utracie osłony i po odbiciu od przeciwnika;
 - cykl kruchych platform: 35 klatek ostrzeżenia, 100 klatek nieobecności;
 - sanitizację uszkodzonego zapisu, w tym `unlocked: "abc"`;
@@ -21,7 +22,7 @@ W gałęzi `fix/regression-debug-2026-10` poprawiono:
 
 ## Testy
 
-**Ostatni przebieg GitHub Actions: 17/17 testów zaliczonych** (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
+**Ostatni przebieg GitHub Actions przed ostatnią poprawką: 17/17 testów zaliczonych. Dodano test 18 dotyczący kolizji ze strażnikiem; nowy przebieg CI powinien go zweryfikować.** (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
 
 Uruchom z katalogu głównego repozytorium:
 
