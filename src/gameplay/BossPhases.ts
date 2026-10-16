@@ -6,7 +6,7 @@ export function getBossPhase(hp: number, maxHp: number): BossPhase {
     throw new RangeError('Boss health must be finite and maxHp must be positive');
   }
   const ratio = Math.max(0, Math.min(1, hp / maxHp));
-  if (ratio > 2 / 3) return 'awakening';
+  if (ratio >= 2 / 3) return 'awakening';
   if (ratio > 1 / 3) return 'hunt';
   return 'enraged';
 }
