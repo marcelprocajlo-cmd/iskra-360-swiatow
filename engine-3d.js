@@ -52,7 +52,7 @@
     const ground=[stone,green,gold,ice,purple,stone,ice,pink,green,purple,pink,cyan][s.biome]||stone;
     for(const p of s.platforms){
       const m=p.type==='ice'?ice:p.type==='bounce'?purple:p.type==='crumble'?pink:ground;
-      add(box(p.x+p.w/2,540-p.y-p.h/2,0,p.w,p.h,34,m));
+      const platform=add(box(p.x+p.w/2,540-p.y-p.h/2,0,p.w,p.h,34,m));platform.userData.source=p;
       add(box(p.x+p.w/2,540-p.y-2,18,p.w,4,3,p.type==='ice'?white:cyan));
     }
     for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?7:6,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
