@@ -47,8 +47,10 @@
   function add(o){objects.push(o);return o;}
   function build(s){
     clear();
-    // Platformy, tła i pułapki pozostają rysowane przez oryginalny renderer 2D.\n    for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?7:6,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
-    // Nie budujemy przestrzennego świata ani geometrii planszy — tylko modele obiektów gry.\n    for(const e of s.enemies){
+    // Platformy, tła i pułapki pozostają rysowane przez oryginalny renderer 2D.
+    for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?7:6,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
+    // Nie budujemy przestrzennego świata ani geometrii planszy — tylko modele obiektów gry.
+    for(const e of s.enemies){
       const g=new T.Group();world.add(g);g.position.set(e.x+e.w/2,540-e.y-e.h/2,32);
       const b=make(e.boss?new T.IcosahedronGeometry(e.w*.53,2):new T.SphereGeometry(e.w*.48,18,12),e.boss?pink:purple,g);b.scale.y=e.boss?1.05:.82;
       for(const side of [-1,1]){box(side*e.w*.17,2,e.w*.36,e.boss?8:5,e.boss?6:4,3,white,g);ball(side*e.w*.17,2,e.w*.36+2,1.5,dark,g);}
