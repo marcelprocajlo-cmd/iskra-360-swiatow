@@ -33,7 +33,7 @@ Proceduralna grafika może być bardziej geometryczna niż malarska; redukujemy 
 - **Stage 0:** plan, art bible, story and repository rules are present.
 - **Stage 1:** Phaser/Vite/strict TS, fixed-step player controller, keyboard/pad/touch input, PL/EN strings and versioned save migration are implemented. Full key rebinding remains open.
 - **Stage 2:** procedural parallax, cached grain, biome silhouettes and Verlet flame tail are implemented. CI captures screenshots, but a human has not yet reviewed them for art direction.
-- **Stage 3:** combo/charge/throw foundations, one patrol enemy, timed power-ups and game-over/retry exist. Boss phases, complete hazard interactions and per-biome enemy rosters remain.
+- **Stage 3:** combo/charge/throw foundations, one patrol enemy, timed power-ups and game-over/retry exist. Bosses now have three health phases and phase-dependent speed escalation; bespoke attacks/telegraphs, complete hazard interactions and per-biome enemy rosters remain.
 - **Stage 4:** synthesized SFX, volume buses and an AudioContext-time music sequencer exist. Musical composition and transitions still need tuning.
 - **Stage 5:** main menu, world map, level selection and settings exist. Shop, achievements, daily challenge and speedrun UI remain.
 - **Stage 6:** 20 level definitions exist, but they reuse five base layouts with biome-specific variations. Bespoke level-by-level design and a jump/glide/dash reachability solver remain.
@@ -50,6 +50,6 @@ The preceding code snapshot passed all CI gates including Playwright: [run 38957
 - **Combat:** combo/charge/throw foundations, three visually distinct patrol archetypes, enemy HP, friend rescue rewards, timed power-ups, shield interaction and game-over/retry.
 - **Audio:** synthesized SFX, separate volume buses and an AudioContext-time music sequencer.
 - **Campaign:** 20 level definitions in four worlds, world map/selection, progress unlocks and a finale after level 20.
-- **Still open:** handcrafted/polished layout for every level, formal jump/glide/dash reachability solver, unique enemy behaviors/rosters per biome, full boss phase logic, complete hazards, shop/achievements/daily challenge, full rhythm auto-run mode, infinite/daily seed and ghost replay, performance profiling and human visual review.
+- **Still open:** handcrafted/polished layout for every level, formal jump/glide/dash reachability solver, unique enemy behaviors/rosters per biome, bespoke boss attacks/telegraphs (basic health phases exist), complete hazards, shop/achievements/daily challenge, full rhythm auto-run mode, infinite/daily seed and ghost replay, performance profiling and human visual review.
 
 CI run [38960679972](https://github.com/marcelprocajlo-cmd/iskra-360-swiatow/actions/runs/38960679972) checks the current code before the latest documentation update. A passing screenshot artifact is not a substitute for a manual playthrough. No public preview deployment is configured.
