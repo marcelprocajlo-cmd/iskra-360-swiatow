@@ -277,5 +277,6 @@
     renderer.render(scene,camera);
     }catch(error){fallback3D(error);}
   }
+  const fallbackCanvas=document.getElementById('game');if(fallbackCanvas){fallbackCanvas.style.opacity='0';fallbackCanvas.style.pointerEvents='none';fallbackCanvas.setAttribute('aria-hidden','true');}
   window.__iskra3dActive=true;frame();
 })();
