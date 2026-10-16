@@ -21,6 +21,8 @@ W gałęzi `fix/regression-debug-2026-10` poprawiono:
 
 ## Testy
 
+**Ostatni przebieg GitHub Actions: 17/17 testów zaliczonych** (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
+
 Uruchom z katalogu głównego repozytorium:
 
 ```bash
