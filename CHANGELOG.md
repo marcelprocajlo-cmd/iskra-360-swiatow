@@ -1,3 +1,11 @@
+## 2026-10-16 — Pełny tryb 3D i poprawa sterowania
+
+- Usunięto przełącznik renderowania 2D/3D; prezentacja gry pozostaje w trybie 3D.
+- Zastąpiono widoczne pikselowe tło i platformy trójwymiarowymi bryłami, warstwowymi panoramami biomów, świecącymi krawędziami, modelami pułapek i checkpointów.
+- Usprawniono parametry ruchu: szybsza reakcja na kierunek, wyższy i bardziej kontrolowany skok, przy zachowaniu różnic między biomami.
+- Dodano czytelny komunikat, jeśli przeglądarka nie udostępnia WebGL/Three.js.
+- Dodano testy regresji trybu 3D i parametrów fizyki.
+
 # Changelog
 
 ## Poprawki regresyjne — październik 2026
