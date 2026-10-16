@@ -1,5 +1,12 @@
 # Changelog
 
+## Etap 09 — modele 3D i animacje
+- Dodano scenę WebGL na Three.js z oświetleniem, mgłą, metalicznymi materiałami i efektami emissive.
+- Zbudowano trójwymiarowy model Iskry z przegubowymi kończynami, animacją biegu, skoku, anteny i dashu.
+- Dodano trójwymiarowe platformy, kryształy, portale, pułapki, przeciwników i bossów.
+- Dodano przełącznik 3D ON/OFF oraz pozostawiono Canvas 2D jako tryb awaryjny.
+- Uwaga: renderer 3D wymaga połączenia z CDN Three.js i obsługi WebGL; nie wykonano testu w prawdziwej przeglądarce.
+
 ## Etap 08 — oprawa graficzna i modelowanie
 - Rozbudowano rysowany model Iskry: antena, pancerz, wizjer, rdzeń energetyczny, ramiona i nogi.
 - Dodano 12 wariantów panoram biomów z paralaksą i charakterystycznymi sylwetkami.
