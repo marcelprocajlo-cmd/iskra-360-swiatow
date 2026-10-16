@@ -30,7 +30,7 @@ export class BeatClock {
       const scale = this.theme.scale;
       events.push({ at, step, midi: this.theme.root + scale[(step * 3 + Math.floor(step / 8)) % scale.length]!, layer: 'arp' });
       if (step % 4 === 0) events.push({ at, step, midi: this.theme.root - 12, layer: 'bass' });
-      if (step % 8 === 0) events.push({ at: Math.max(audioTime, this.nextTime + this.offsetSeconds), step, midi: this.theme.root + 12, layer: 'pad' });
+      if (step % 8 === 0) events.push({ at, step, midi: this.theme.root + 12, layer: 'pad' });
       if (step % 4 === 2) events.push({ at: Math.max(audioTime, this.nextTime + this.offsetSeconds), step, midi: 36, layer: 'drum' });
       this.stepIndex += 1; this.nextTime += stepDuration;
     }
