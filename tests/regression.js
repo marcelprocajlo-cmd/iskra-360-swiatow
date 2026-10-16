@@ -169,6 +169,22 @@ test('22. Animacje wtórne i kryształy otoczenia są aktualizowane w pętli 3D'
   assert.match(engine, /o\.position\.y=o\.userData\.baseY\+Math\.sin/);
 });
 
+test('23. Platformy 3D mają warstwę trawy dopasowaną do biomu', () => {
+  assert.match(engine, /const coverColors=\[/);
+  assert.match(engine, /const turfMat=new T\.MeshStandardMaterial/);
+  assert.match(engine, /Layered soil\/turf lip makes the platform top read as a surface/);
+  assert.match(engine, /const tuftCount=Math\.max\(2,Math\.floor\(p\.w\/43\)\)/);
+  assert.match(engine, /make\(grassGeo,bladeMat,group\)/);
+});
+
+test('24. Dekoracje platform obejmują kwiaty i kamyki bez zmiany kolizji poziomu', () => {
+  assert.match(engine, /const flowerMats=\[/);
+  assert.match(engine, /const pebbleGeo=new T\.DodecahedronGeometry/);
+  assert.match(engine, /s\.biome===1\|\|s\.biome===8/);
+  assert.match(engine, /for\(const \[pi,p\] of s\.platforms\.entries\(\)\)/);
+  assert.match(engine, /group\.userData\.source=p/);
+});
+
 test('20. Fizyka ma szybszą reakcję i wyższy, kontrolowany skok', () => {
   const h = createHarness(html);
   assert.ok(h.evaluate('PHYSICS.every(p => p.speed >= 4.8 && p.accel >= .9 && p.jump >= 12.2)'));
