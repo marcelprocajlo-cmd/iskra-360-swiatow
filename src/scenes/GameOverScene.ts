@@ -3,6 +3,8 @@ import { getInitialLanguage, translate } from '../core/i18n';
 import { SynthAudio } from '../audio/SynthAudio';
 
 export class GameOverScene extends Phaser.Scene {
+  private levelId: string | undefined;
+  init(data: { levelId?: string } = {}): void { this.levelId = data.levelId; }
   constructor() { super('GameOverScene'); }
   create(): void {
     const language = getInitialLanguage();
@@ -29,7 +31,7 @@ export class GameOverScene extends Phaser.Scene {
       bg.on('pointerout', () => this.tweens.add({ targets: group, scale: 1, duration: 100 }));
       bg.on('pointerdown', action);
     };
-    addButton(height * 0.61, translate(language, 'retry'), true, () => this.scene.start('WorldScene'));
+    addButton(height * 0.61, translate(language, 'retry'), true, () => this.scene.start('WorldScene', { levelId: this.levelId }));
     addButton(height * 0.72, translate(language, 'backToMenu'), false, () => this.scene.start('MainMenuScene'));
   }
 }
