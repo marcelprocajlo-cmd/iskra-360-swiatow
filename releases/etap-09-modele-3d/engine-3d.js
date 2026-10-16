@@ -12,7 +12,7 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(960, 540, false);
   const scene = new T.Scene();
-  scene.fog = new T.Fog(0x071329, 650, 1500);
+  // Brak mgły i tła 3D: scena jest przezroczystą nakładką na platformówkę 2D.
   const camera = new T.OrthographicCamera(-480,480,270,-270,.1,2500);
   camera.position.set(480,270,900);
   scene.add(new T.HemisphereLight(0xb5f6ff,0x17152f,2.2));
@@ -41,26 +41,15 @@
   armL.position.set(-13,4,0);armR.position.set(13,4,0);legL.position.set(-6,-11,0);legR.position.set(6,-11,0);
   box(0,0,-8,12,15,7,dark,torso);box(0,4,-12,6,6,2,purple,torso);
   const aura=ball(0,0,-8,17, new T.MeshBasicMaterial({color:0x43f6e4,transparent:true,opacity:.11}));aura.scale.set(1.8,1.8,.3);
-  const stars=[];
-  for(let i=0;i<110;i++){const s=ball((i*137)%1500,(i*71)%540,-100,.8+(i%3)*.4,new T.MeshBasicMaterial({color:i%5===0?0x50f5e4:0x9bb7d9,transparent:true,opacity:.32}));stars.push(s);}
   const biomeColors=[0x50f5e4,0x8df6a8,0xffd777,0xb4e7ff,0xfa78f5,0xffb66d,0xe0faff,0xff7d51,0xd0ff93,0x9c9dff,0xff77d9,0xfff2a8];
   let built=-1, objects=[], enemies=[], portal, portalCore, active=true;
   function clear(){for(const g of enemies)world.remove(g);for(const o of objects){world.remove(o);if(o.geometry)o.geometry.dispose();if(o.material && ![cyan,white,gold,dark,blue,purple,pink,ice,stone,green].includes(o.material))o.material.dispose();}objects=[];enemies=[];portal=null;portalCore=null;}
   function add(o){objects.push(o);return o;}
   function build(s){
     clear();
-    const ground=[stone,green,gold,ice,purple,stone,ice,pink,green,purple,pink,cyan][s.biome]||stone;
-    for(const p of s.platforms){
-      const m=p.type==='ice'?ice:p.type==='bounce'?purple:p.type==='crumble'?pink:ground;
-      const platform=add(box(p.x+p.w/2,540-p.y-p.h/2,0,p.w,p.h,34,m));platform.userData.source=p;
-      add(box(p.x+p.w/2,540-p.y-2,18,p.w,4,3,p.type==='ice'?white:cyan));
-    }
+    // Platformy, tła i pułapki pozostają rysowane przez oryginalny renderer 2D.
     for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?7:6,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
-    for(const h of s.hazards){
-      if(h.type==='wind'){for(let i=0;i<4;i++)add(box(h.x+h.w/2,540-h.y-i*24,12,h.w*.8,2,2,gold));continue;}
-      const o=add(box(h.x+h.w/2,540-h.y-h.h/2,20,h.w,h.h,20,h.type==='lava'?M('#ff653d','#ff2e00',2):pink));o.userData.source=h;
-      if(h.type==='spike')for(let x=h.x+6;x<h.x+h.w;x+=13){const sp=add(make(new T.ConeGeometry(7,18,4),pink));sp.position.set(x,540-h.y-7,26);sp.rotation.z=Math.PI;}
-    }
+    // Nie budujemy przestrzennego świata ani geometrii planszy — tylko modele obiektów gry.
     for(const e of s.enemies){
       const g=new T.Group();world.add(g);g.position.set(e.x+e.w/2,540-e.y-e.h/2,32);
       const b=make(e.boss?new T.IcosahedronGeometry(e.w*.53,2):new T.SphereGeometry(e.w*.48,18,12),e.boss?pink:purple,g);b.scale.y=e.boss?1.05:.82;
@@ -87,9 +76,8 @@
     for(const o of objects){const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined)o.position.y=540-(a.y??a.baseY)-a.h/2;if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.y+=Math.sin(s.tick*.08+(o.userData.phase||0))*.22;}}}
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
     if(portal){portal.rotation.z+=.018;portal.scale.setScalar(1+Math.sin(s.tick*.08)*.08);portalCore.rotation.y+=.04;portalCore.scale.setScalar(1+Math.sin(s.tick*.1)*.14);}
-    stars.forEach((o,i)=>{o.position.x=((i*137-s.cam*(.05+(i%4)*.02))%1600+1600)%1600-320;});
     renderer.render(scene,camera);
   }
-  button.onclick=()=>{active=!active;stage.classList.toggle('mode-3d',active);canvas.style.display=active?'block':'none';button.textContent='3D: '+(active?'ON':'OFF');};
-  stage.classList.add('mode-3d');button.textContent='3D: ON';frame();
+  button.onclick=()=>{active=!active;window.__iskra3dActive=active;button.textContent='Modele 3D: '+(active?'ON':'OFF');};
+  window.__iskra3dActive=true;button.textContent='Modele 3D: ON';frame();
 })();
