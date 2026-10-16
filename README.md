@@ -54,3 +54,14 @@ Wykonywano kontrolę składni JavaScript i testy obecności kluczowych funkcji. 
 
 ## Stack
 HTML, CSS, JavaScript, Canvas 2D dla planszy oraz Three.js 0.160 z CDN do nakładki modeli 3D.
+
+
+## Debugowanie i testy regresyjne
+
+Poprawki stabilności i testy regresyjne znajdują się w gałęzi `fix/regression-debug-2026-10`. Uruchom testy z katalogu głównego:
+
+```bash
+node tests/regression.js
+```
+
+Testy uruchamiają skrypt gry w lekkim środowisku Node.js z atrapami DOM/Canvas. Nie zastępują testu w prawdziwej przeglądarce, w szczególności testów WebGL, dotyku i układu na różnych rozdzielczościach. Szczegóły zmian: [REVIEW.md](REVIEW.md), procedura ręczna: [TEST_PLAN.md](TEST_PLAN.md).
