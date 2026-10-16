@@ -141,6 +141,14 @@ test('17. Render 2D nie dubluje modeli 3D przedmiotów, wrogów i portalu', () =
   assert.match(inline, /if\(!window\.__iskra3dActive\)\{ctx\.fillStyle=pal\[2\]/);
 });
 
+test('18. Strażnik nadal zadaje obrażenia po wcześniejszym trafieniu atakiem', () => {
+  const h = createHarness(html);
+  h.evaluate('start(30); const boss=enemies.find(e=>e.boss); player.x=boss.x; player.y=boss.y; player.vx=0; player.vy=0; player.inv=0; player.shields=0; player.attackHit=[boss];');
+  h.evaluate('update()');
+  assert.equal(h.evaluate('lives'), 2);
+  assert.match(inline, /if\(!a\.alive\)continue;if\(rect\(p,a\)\)/);
+});
+
 let failed = 0;
 for (const { name, fn } of tests) {
   try { fn(); process.stdout.write('PASS ' + name + '\n'); }
