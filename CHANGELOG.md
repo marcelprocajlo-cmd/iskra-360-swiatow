@@ -67,3 +67,13 @@
 - Added combat state machine, patrol enemy, timed power-ups, synthesized SFX and audio-time music sequencing.
 - Added versioned save migration, per-level reward tracking, PL/EN localization, Vitest/regression tests and Playwright smoke screenshots.
 - Scope remains a vertical slice: boss phases, bespoke level layouts, reachability solver, full hazards, secrets, shop/meta modes and infinite/daily/ghost modes are still open.
+
+
+## Unreleased — Phaser rewrite vertical slice
+
+- Added Phaser 3 + Vite + TypeScript strict foundation while preserving the original game in `legacy/`.
+- Added procedural parallax biomes, paper grain, animated flame tail, 20 level definitions, world map and campaign finale.
+- Added combo/charge/throw foundations, three patrol archetypes, friend rescue, crystals, power-ups and game-over/retry.
+- Added synthesized SFX, AudioContext-time music sequencing, settings, PL/EN strings, versioned save migration and resilient storage fallbacks.
+- Added Vitest/regression tests, level structure validation, Playwright smoke and screenshot artifacts.
+- Remaining production scope includes handcrafted/reachability-verified levels, boss phases, biome-specific enemy behaviors, full hazards, meta modes, rhythm auto-run, infinite/daily/ghost modes, performance profiling and manual visual review.

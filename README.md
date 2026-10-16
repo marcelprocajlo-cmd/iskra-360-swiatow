@@ -22,3 +22,8 @@ Plan: `docs/PLAN.md`; Art Bible: `docs/ART_BIBLE.md`; historia: `docs/STORY.md`;
 ## Rewrite preview status
 
 The Phaser rewrite is on branch `feat/phaser-rewrite` and is **not deployed to a public URL yet**. Run locally with Node.js 22.12 or newer: `npm install`, then `npm run dev`. The quality workflow produces menu/gameplay/map screenshots as an artifact for review.
+
+
+## Phaser rewrite status
+
+The rewrite is on `feat/phaser-rewrite` and is not deployed to a public URL yet. Run locally with Node.js 22.12 or newer: `npm install`, then `npm run dev`. The CI workflow builds the game, runs unit/regression/lint/level validation and Playwright smoke checks, and uploads screenshots as an artifact. See `docs/PLAN.md` and `REVIEW.md` for implemented scope and remaining work.

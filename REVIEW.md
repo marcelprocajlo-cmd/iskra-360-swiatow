@@ -35,3 +35,21 @@ Nowa architektura została dodana na gałęzi `feat/phaser-rewrite`: Vite/Phaser
 - No measured FPS/performance report yet. The rewrite has not been deployed to a public preview URL.
 
 Run locally with Node 22.12+: `npm install && npm run dev`.
+
+
+## Phaser rewrite review — 2026-10-16
+
+The branch `feat/phaser-rewrite` contains the Phaser 3 rewrite and a playable vertical slice. Automated gates include strict TypeScript/Vite build, Vitest and legacy regression tests, ESLint, level data validation and Playwright Chromium smoke tests for menu/gameplay/world map/mobile-sized layout. Screenshots are uploaded as the `iskra-visual-smoke` workflow artifact.
+
+### Implemented in the current branch
+- 20 level definitions across four worlds, unlockable map, save migration, settings and PL/EN text.
+- Procedural parallax art, animated flame tail, combat state machine, three patrol archetypes, timed power-ups, friend rescue and crystal rewards.
+- Audio-time music sequencing, volume settings, game-over/retry and campaign finale.
+
+### Remaining before a production release
+- Manually review screenshots and test keyboard/gamepad/touch feel on real devices.
+- Bespoke level layouts and a reachability solver are not complete; current layouts reuse base patterns with biome variations.
+- Enemy behaviors are not yet biome-specific; full boss phases, hazards, secrets, cosmetic shop, achievements, daily challenge, infinite mode, full rhythm gameplay and deterministic ghost replay remain.
+- No measured FPS/performance report or public deployment exists. Do not merge to `main` until the owner reviews the branch and approves.
+
+Local run: Node.js 22.12+, `npm install && npm run dev`.

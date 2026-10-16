@@ -41,3 +41,15 @@ Proceduralna grafika może być bardziej geometryczna niż malarska; redukujemy 
 - **Stage 9:** CI covers build, unit/regression tests, lint, structure validation and Playwright smoke. FPS profiling and manual browser art review remain.
 
 The preceding code snapshot passed all CI gates including Playwright: [run 38957856261](https://github.com/marcelprocajlo-cmd/iskra-360-swiatow/actions/runs/38957856261). The `iskra-visual-smoke` artifact contains menu, first-world and world-map screenshots; artifact output is not committed as PNG files.
+
+
+## Current implementation status (2026-10-16)
+
+- **Foundation:** Phaser/Vite/strict TypeScript, fixed-step player controller, keyboard/gamepad/touch input, PL/EN localization, resilient versioned save migration and settings persistence.
+- **Art:** procedural parallax backgrounds for four biomes, cached paper grain, animated flame tail and menu/map/game-over/finale screens. CI screenshots are available as artifacts; manual art-direction review is still needed.
+- **Combat:** combo/charge/throw foundations, three visually distinct patrol archetypes, enemy HP, friend rescue rewards, timed power-ups, shield interaction and game-over/retry.
+- **Audio:** synthesized SFX, separate volume buses and an AudioContext-time music sequencer.
+- **Campaign:** 20 level definitions in four worlds, world map/selection, progress unlocks and a finale after level 20.
+- **Still open:** handcrafted/polished layout for every level, formal jump/glide/dash reachability solver, unique enemy behaviors/rosters per biome, full boss phase logic, complete hazards, shop/achievements/daily challenge, full rhythm auto-run mode, infinite/daily seed and ghost replay, performance profiling and human visual review.
+
+CI run [38960679972](https://github.com/marcelprocajlo-cmd/iskra-360-swiatow/actions/runs/38960679972) checks the current code before the latest documentation update. A passing screenshot artifact is not a substitute for a manual playthrough. No public preview deployment is configured.
