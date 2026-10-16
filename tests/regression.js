@@ -6,7 +6,7 @@ const { createHarness } = require('./harness');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const inline = html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1];
+const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(inline, 'Główny skrypt inline musi istnieć');
 
 const tests = [];
@@ -40,7 +40,7 @@ test('3. Generator buduje wszystkie 360 poziomów bez wyjątków', () => {
 test('4. Strażnik pojawia się co 30 poziomów i tylko tam', () => {
   const h = createHarness(html);
   for (let n = 1; n <= 360; n++) {
-    const hasBoss = h.evaluate('generate(' + n + ').enemies.some(e => e.boss)');
+    const hasBoss = h.evaluate('generate(' + n + ').enemies.some(e=>e.boss)');
     assert.equal(hasBoss, n % 30 === 0, 'poziom ' + n);
   }
 });
@@ -104,7 +104,6 @@ test('11. Istniejąca kopia zapasowa nie jest nadpisywana każdym zapisem', () =
 
 test('12. Kryształy i kolce na ruchomych platformach mają kotwicę', () => {
   const h = createHarness(html);
-  h.evaluate('start(1)');
   assert.ok(h.evaluate('generate(1).items.some(i=>i.anchor && i.anchor.type==="moving")'));
   assert.ok(h.evaluate('generate(1).hazards.some(i=>i.anchor && i.anchor.type==="moving")'));
   assert.match(inline, /if\(a\.anchor\)a\.y=/);
@@ -144,8 +143,8 @@ test('17. Render 2D nie dubluje modeli 3D przedmiotów, wrogów i portalu', () =
 
 let failed = 0;
 for (const { name, fn } of tests) {
-  try { fn(); process.stdout.write('PASS ' + name + '\\n'); }
-  catch (error) { failed++; process.stderr.write('FAIL ' + name + '\\n  ' + (error.stack || error.message) + '\\n'); }
+  try { fn(); process.stdout.write('PASS ' + name + '\n'); }
+  catch (error) { failed++; process.stderr.write('FAIL ' + name + '\n  ' + (error.stack || error.message) + '\n'); }
 }
-process.stdout.write('\\nWynik: ' + (tests.length - failed) + '/' + tests.length + ' testów zaliczonych.\\n');
+process.stdout.write('\nWynik: ' + (tests.length - failed) + '/' + tests.length + ' testów zaliczonych.\n');
 if (failed) process.exitCode = 1;
