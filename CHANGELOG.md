@@ -1,5 +1,9 @@
 # Changelog
 
+## Poprawki regresyjne — październik 2026
+- Rozdzielono obsługę trafienia atakiem od kolizji z wrogiem, aby trafiony strażnik nadal stanowił zagrożenie.
+- Dodano test regresyjny dla kolizji z bossem po wcześniejszym trafieniu.
+
 ## Etap 09 — modele 3D na planszy 2D
 - Zachowano klasyczną planszę platformówki 2D: tła, platformy i pułapki nadal rysuje Canvas.
 - Dodano przezroczystą nakładkę Three.js wyłącznie dla modelu Iskry, przeciwników, kryształów i portalu.
