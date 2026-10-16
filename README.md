@@ -47,6 +47,7 @@ Każdy ukończony etap ma osobny snapshot i raport:
 - [06 — osiągnięcia](releases/etap-06-osiagniecia/)
 - [07 — przygotowanie wydania](releases/etap-07-wydanie/)
 - [08 — oprawa graficzna i modelowanie](releases/etap-08-oprawa-graficzna/)
+- [09 — modele 3D i animacje](releases/etap-09-modele-3d/)
 
 ## Kontrola jakości
 Wykonywano kontrolę składni JavaScript i testy obecności kluczowych funkcji. Etap 07 obejmuje też test automatyczny na atrapach DOM/Canvas oraz przełączenie wszystkich 360 poziomów. To nie zastępuje testu w prawdziwej przeglądarce ani na telefonie; listę testów opisuje `TEST_PLAN.md`.
