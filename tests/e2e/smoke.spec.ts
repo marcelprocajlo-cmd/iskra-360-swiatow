@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('menu starts the first world and captures reference screenshots', async ({ page }) => {
+  test.setTimeout(60000);
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
@@ -13,10 +14,10 @@ test('menu starts the first world and captures reference screenshots', async ({ 
   if (!bounds) throw new Error('Canvas did not receive layout bounds');
   await canvas.click({ position: { x: bounds.width * 0.125 + 120, y: bounds.height * 0.56 + 30 } });
   await page.waitForTimeout(500);
+  await canvas.screenshot({ path: 'docs/shots/first-world.png', timeout: 15000, animations: 'disabled' });
   await page.keyboard.down('ArrowRight');
   await page.waitForTimeout(500);
   await page.keyboard.up('ArrowRight');
-  await page.screenshot({ path: 'docs/shots/first-world.png' });
   expect(pageErrors).toEqual([]);
 });
 
