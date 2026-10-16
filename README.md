@@ -17,3 +17,8 @@ Ruch: strzałki/A-D. Skok, podwójny skok i szybowanie: W/↑/Spacja. Dash: X/Sh
 
 ## Status
 Plan: `docs/PLAN.md`; Art Bible: `docs/ART_BIBLE.md`; historia: `docs/STORY.md`; projekt poziomów: `docs/LEVEL_DESIGN.md`. Nie deklarujemy jeszcze ukończonej kampanii ani wizualnej weryfikacji w prawdziwej przeglądarce. Etapy są raportowane jawnie.
+
+
+## Rewrite preview status
+
+The Phaser rewrite is on branch `feat/phaser-rewrite` and is **not deployed to a public URL yet**. Run locally with Node.js 22.12 or newer: `npm install`, then `npm run dev`. The quality workflow produces menu/gameplay/map screenshots as an artifact for review.
