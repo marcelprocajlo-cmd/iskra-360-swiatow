@@ -2,17 +2,22 @@
 (() => {
   const canvas = document.getElementById('game3d');
   const stage = document.getElementById('canvasStage');
-  const button = document.getElementById('renderMode');
+  const stageStatus = document.getElementById('canvasStage');
   if (!canvas || !window.THREE || !window.__iskra3dState) {
-    if (button) button.textContent = '3D: NIEDOSTĘPNE';
+    if (stageStatus) {
+      stageStatus.style.background = '#071329';
+      const note = document.createElement('div');
+      note.textContent = 'Tryb 3D wymaga WebGL i połączenia z biblioteką Three.js.';
+      note.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;color:#e1ffff;font:700 18px/1.5 system-ui;background:radial-gradient(ellipse at 50% 30%,#163d59,#071329 75%);';
+      stageStatus.appendChild(note);
+    }
     return;
   }
   const T = window.THREE;
-  const renderer = new T.WebGLRenderer({canvas, alpha:true, antialias:true});
+  const renderer = new T.WebGLRenderer({canvas, alpha:false, antialias:true, powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(960, 540, false);
   const scene = new T.Scene();
-  // Brak mgły i tła 3D: scena jest przezroczystą nakładką na platformówkę 2D.
   const camera = new T.OrthographicCamera(-480,480,270,-270,.1,2500);
   camera.position.set(480,270,900);
   scene.add(new T.HemisphereLight(0xb5f6ff,0x17152f,2.2));
@@ -42,14 +47,101 @@
   box(0,0,-8,12,15,7,dark,torso);box(0,4,-12,6,6,2,purple,torso);
   const aura=ball(0,0,-8,17, new T.MeshBasicMaterial({color:0x43f6e4,transparent:true,opacity:.11}));aura.scale.set(1.8,1.8,.3);
   const biomeColors=[0x50f5e4,0x8df6a8,0xffd777,0xb4e7ff,0xfa78f5,0xffb66d,0xe0faff,0xff7d51,0xd0ff93,0x9c9dff,0xff77d9,0xfff2a8];
-  let built=-1, objects=[], enemies=[], portal, portalCore, active=true;
-  function clear(){for(const g of enemies)world.remove(g);for(const o of objects){world.remove(o);if(o.geometry)o.geometry.dispose();if(o.material && ![cyan,white,gold,dark,blue,purple,pink,ice,stone,green].includes(o.material))o.material.dispose();}objects=[];enemies=[];portal=null;portalCore=null;}
+  let built=-1, objects=[], enemies=[], platformMeshes=[], hazardMeshes=[], portal, portalCore, active=true;
+  const biomeLooks=[
+    {sky:0x071329,far:0x102c49,near:0x173c56,rock:0x20506b,top:0x50f5e4,glow:0x0bb6c4},
+    {sky:0x09251f,far:0x174c3c,near:0x236b4c,rock:0x2b7654,top:0x8df6a8,glow:0x31d88b},
+    {sky:0x21162c,far:0x58364c,near:0x85513f,rock:0x9a6149,top:0xffd777,glow:0xf4a84b},
+    {sky:0x101e3b,far:0x243e68,near:0x3e6090,rock:0x567eaa,top:0xb4e7ff,glow:0x52c7ff},
+    {sky:0x160e35,far:0x33205f,near:0x4b2384,rock:0x5934a0,top:0xfa78f5,glow:0x9a5bff},
+    {sky:0x211c2c,far:0x40384d,near:0x5e5268,rock:0x746577,top:0xffb66d,glow:0xdf8b54},
+    {sky:0x102c43,far:0x214e6a,near:0x326a83,rock:0x4a849b,top:0xe0faff,glow:0x6edcff},
+    {sky:0x35181b,far:0x612728,near:0x7f302e,rock:0xa34436,top:0xff7d51,glow:0xff452b},
+    {sky:0x172b26,far:0x2c5748,near:0x3b765e,rock:0x528b6b,top:0xd0ff93,glow:0x83e76a},
+    {sky:0x16152d,far:0x302f59,near:0x3f3b6f,rock:0x514e89,top:0x9c9dff,glow:0x656bff},
+    {sky:0x260d32,far:0x4f1d5c,near:0x772e7c,rock:0x963b8d,top:0xff77d9,glow:0xe644be},
+    {sky:0x061c2d,far:0x104657,near:0x176878,rock:0x238b96,top:0xfff2a8,glow:0x50f5e4}
+  ];
+  function clear(){
+    const shared=[cyan,white,gold,dark,blue,purple,pink,ice,stone,green];
+    for(const g of enemies)world.remove(g);
+    for(const o of objects){
+      o.parent?.remove(o);
+      const geometries=new Set(),materials=new Set();
+      o.traverse?.(child=>{if(child.geometry)geometries.add(child.geometry);if(child.material){for(const mat of (Array.isArray(child.material)?child.material:[child.material]))if(!shared.includes(mat))materials.add(mat);}});
+      if(o.geometry)geometries.add(o.geometry);
+      if(o.material)for(const mat of (Array.isArray(o.material)?o.material:[o.material]))if(!shared.includes(mat))materials.add(mat);
+      geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
+    }
+    objects=[];enemies=[];platformMeshes=[];hazardMeshes=[];portal=null;portalCore=null;
+  }
   function add(o){objects.push(o);return o;}
+  function buildBackdrop(s,look){
+    scene.background=new T.Color(look.sky);
+    const backMat=new T.MeshBasicMaterial({color:look.sky});
+    add(box(s.worldW/2,270,-180,s.worldW+1600,1000,12,backMat));
+    const makeRidge=(z,base,peak,color,seed)=>{
+      const shape=new T.Shape();shape.moveTo(0,0);shape.lineTo(0,base);
+      let r=(seed>>>0)||1,x=0;while(x<s.worldW+300){r=(r*1664525+1013904223)>>>0;const step=100+(r%170);r=(r*1664525+1013904223)>>>0;shape.lineTo(x+step*.45,base+((r/4294967296)*peak));shape.lineTo(x+step,base);x+=step;}
+      shape.lineTo(s.worldW+500,0);shape.closePath();
+      const mesh=make(new T.ShapeGeometry(shape),new T.MeshBasicMaterial({color,transparent:true,opacity:.88,side:T.DoubleSide}));mesh.position.set(-100,0,z);add(mesh);
+    };
+    makeRidge(-125,60,150,look.far,s.level*13+7);
+    makeRidge(-95,25,100,look.near,s.level*31+19);
+    // Distant 3D towers and luminous windows give every biome its own silhouette.
+    let seed=(s.level*7919+31)>>>0;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    for(let i=0;i<Math.ceil(s.worldW/145);i++){
+      const x=i*145+rand()*80, h=45+rand()*135, w=24+rand()*42;
+      const mat=new T.MeshStandardMaterial({color:look.rock,emissive:look.glow,emissiveIntensity:.12,metalness:.25,roughness:.8});
+      const tower=add(box(x,40+h/2,-65,w,h,28,mat));
+      tower.rotation.z=(rand()-.5)*.08;
+      if(i%2===0){const windowMat=new T.MeshBasicMaterial({color:look.top});add(box(x,40+h*.55,-48,3,Math.max(8,h*.22),2,windowMat));}
+    }
+    for(let i=0;i<70;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
+  }
   function build(s){
     clear();
-    // Platformy, tła i pułapki pozostają rysowane przez oryginalny renderer 2D.
-    for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?7:6,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
-    // Nie budujemy przestrzennego świata ani geometrii planszy — tylko modele obiektów gry.
+    const look=biomeLooks[s.biome]||biomeLooks[0];buildBackdrop(s,look);
+    const bodyMat=M('#243b57','#091727',.25,.55,.48);
+    const topMat=M('#'+look.top.toString(16).padStart(6,'0'),'#'+look.glow.toString(16).padStart(6,'0'),.9,.45,.28);
+    const sideMat=M('#'+look.rock.toString(16).padStart(6,'0'),'#'+look.glow.toString(16).padStart(6,'0'),.3,.35,.42);
+    const movingMat=M('#32617a','#0d8193',.7,.65,.24);
+    const crumbleMat=M('#66506e','#b347a8',.65,.45,.35);
+    // Every collision platform is represented by a solid 3D block with a lit edge.
+    for(const p of s.platforms){
+      const group=new T.Group();world.add(group);group.position.set(p.x+p.w/2,540-p.y-p.h/2,0);group.userData.source=p;add(group);platformMeshes.push(group);
+      const material=p.type==='moving'?movingMat:p.type==='crumble'?crumbleMat:bodyMat;
+      box(0,0,0,p.w,p.h,38,material,group);
+      box(0,p.h/2-2,21,p.w,4,5,p.type==='moving'?ice:topMat,group);
+      box(0,-p.h/2+2,20,p.w-8,2,3,sideMat,group);
+      for(let j=-1;j<=1;j++){if(p.w>100)box(j*p.w*.27,0,20,2,p.h-5,1,sideMat,group);}
+      if(p.type==='moving'){const rail=box(0,-p.h/2-8,-4,p.w+12,2,6,sideMat,group);rail.userData.rail=true;}
+    }
+    for(const h of s.hazards){
+      const group=new T.Group();world.add(group);group.position.set(h.x+h.w/2,540-h.y-h.h/2,29);group.userData.source=h;add(group);hazardMeshes.push(group);
+      if(h.type==='spike'){
+        const count=Math.max(2,Math.floor(h.w/12));for(let i=0;i<count;i++){const spike=make(new T.ConeGeometry(7,Math.max(18,h.h*1.7),5),pink,group);spike.position.set((i-(count-1)/2)*12,1,0);const base=box(spike.position.x,-h.h*.25,0,10,5,7,dark,group);base.userData.detail=true;}
+        box(0,-h.h*.5,1,h.w,3,8,pink,group);
+      }else if(h.type==='laser'){
+        const beam=box(0,0,0,h.w,Math.max(4,h.h),7,pink,group);beam.material=M('#ff527d','#ff164f',2.6,.1,.18);
+        box(0,0,-4,h.w+10,2,2,white,group);
+        for(const side of [-1,1])box(side*h.w*.52,0,0,5,18,8,gold,group);
+      }else if(h.type==='lava'){
+        const lavaMat=M('#ff572f','#ff2b16',2.2,.15,.24);box(0,0,0,h.w,Math.max(10,h.h),24,lavaMat,group);
+        for(let i=0;i<Math.max(2,Math.floor(h.w/24));i++){const bubble=ball((i-(Math.floor(h.w/24)-1)/2)*20,3,14,3,gold,group);bubble.userData.phase=i*.8;}
+      }else if(h.type==='wind'){
+        const windMat=new T.MeshBasicMaterial({color:look.top,transparent:true,opacity:.22,wireframe:true});
+        const ring=make(new T.TorusGeometry(Math.min(h.w,h.h)*.34,2,5,24),windMat,group);ring.rotation.x=Math.PI/2;
+        box(0,0,-2,h.w,h.h,2,new T.MeshBasicMaterial({color:look.glow,transparent:true,opacity:.08}),group);
+      }
+    }
+    if(s.checkpoint){
+      const beacon=add(new T.Group());beacon.position.set(s.checkpoint.x+s.checkpoint.w/2,540-s.checkpoint.y-s.checkpoint.h/2,25);beacon.userData.source=s.checkpoint;
+      const pole=box(0,0,0,5,s.checkpoint.h,6,white,beacon);const flag=make(new T.ConeGeometry(9,17,4),gold,beacon);flag.position.set(7,8,0);flag.rotation.z=-Math.PI/2;
+      const glow=ball(0,0,5,12,cyan,beacon);glow.material=new T.MeshBasicMaterial({color:look.top,transparent:true,opacity:.22});glow.scale.set(1.1,2,.3);
+    }
+    for(const item of s.items){const o=add(ball(item.x,540-item.y,24,item.type==='key'?8:7,item.type==='key'?purple:gold));o.userData.source=item;o.userData.phase=item.x*.03;}
+
     for(const e of s.enemies){
       const g=new T.Group();world.add(g);g.position.set(e.x+e.w/2,540-e.y-e.h/2,32);
       const b=make(e.boss?new T.IcosahedronGeometry(e.w*.53,2):new T.SphereGeometry(e.w*.48,18,12),e.boss?pink:purple,g);b.scale.y=e.boss?1.05:.82;
@@ -65,7 +157,7 @@
   function frame(){
     requestAnimationFrame(frame);if(!active)return;
     const s=window.__iskra3dState();if(!s)return;if(s.level!==built)build(s);
-    camera.position.x=s.cam+480;camera.lookAt(s.cam+480,270,0);rim.color.setHex(biomeColors[s.biome]||0x50f5e4);
+    camera.position.x=s.cam+480;camera.lookAt(s.cam+480,270,0);rim.color.setHex(biomeColors[s.biome]||0x50f5e4);sun.color.setHex(biomeColors[s.biome]||0x50f5e4);
     const p=s.player, walk=Math.sin(p.anim||0);
     hero.position.set(p.x+p.w/2,540-p.y-p.h/2,38);
     hero.rotation.z=p.dash>0?-p.facing*.13:Math.max(-.14,Math.min(.14,-p.vx*.025));
@@ -73,11 +165,12 @@
     head.rotation.z=Math.sin(s.tick*.045)*.06;armL.rotation.z=p.grounded?walk*.55:-.6;armR.rotation.z=p.grounded?-walk*.55:.6;
     legL.rotation.z=p.grounded?-walk*.48:.2;legR.rotation.z=p.grounded?walk*.48:-.2;antenna.rotation.z=Math.sin(s.tick*.12)*.13;
     aura.position.copy(hero.position);aura.material.opacity=p.dash>0?.28:.11;aura.scale.setScalar(p.dash>0?2.5:1.8);
-    for(const o of objects){const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined)o.position.y=540-(a.y??a.baseY)-a.h/2;if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.y+=Math.sin(s.tick*.08+(o.userData.phase||0))*.22;}}}
+    for(const o of objects){const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
+    for(const g of platformMeshes){const p=g.userData.source;g.position.x=p.x+p.w/2;g.position.y=540-p.y-p.h/2;g.visible=!(p.crumbleGone>0);}
+    for(const g of hazardMeshes){const h=g.userData.source;g.position.x=h.x+h.w/2;g.position.y=540-h.y-h.h/2;g.visible=h.type!=='laser'||!!h.active;g.rotation.z=h.type==='wind'?Math.sin(s.tick*.04+h.phase)*.08:0;g.traverse(child=>{if(child.geometry&&child.geometry.type==='SphereGeometry'&&child.userData.phase!==undefined)child.position.y=Math.sin(s.tick*.1+child.userData.phase)*3;});}
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
     if(portal){portal.rotation.z+=.018;portal.scale.setScalar(1+Math.sin(s.tick*.08)*.08);portalCore.rotation.y+=.04;portalCore.scale.setScalar(1+Math.sin(s.tick*.1)*.14);}
     renderer.render(scene,camera);
   }
-  button.onclick=()=>{active=!active;window.__iskra3dActive=active;button.textContent='Modele 3D: '+(active?'ON':'OFF');};
-  window.__iskra3dActive=true;button.textContent='Modele 3D: ON';frame();
+  window.__iskra3dActive=true;frame();
 })();
