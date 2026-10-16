@@ -68,6 +68,11 @@
   armL.position.set(-13,4,0);armR.position.set(13,4,0);legL.position.set(-6,-11,0);legR.position.set(6,-11,0);
   box(0,0,-8,12,15,7,dark,torso);box(0,4,-12,6,6,2,purple,torso);
   const aura=ball(0,0,-8,17, new T.MeshBasicMaterial({color:0x43f6e4,transparent:true,opacity:.11}));aura.scale.set(1.8,1.8,.3);
+  const heldWeapon=new T.Group();torso.add(heldWeapon);heldWeapon.position.set(15,-7,9);
+  const sword=box(4,-1,0,3,22,3,gold,heldWeapon);sword.rotation.z=-.42;box(4,-9,0,8,3,4,blue,heldWeapon).rotation.z=-.42;
+  const pistol=box(3,-1,0,10,5,5,dark,heldWeapon);box(8,0,0,5,2,3,gold,heldWeapon);
+  const laserGun=box(3,-1,0,12,6,5,cyan,heldWeapon);box(10,-1,0,7,3,3,white,heldWeapon);
+  let projectileMeshes=[];
   const biomeColors=[0x50f5e4,0x8df6a8,0xffd777,0xb4e7ff,0xfa78f5,0xffb66d,0xe0faff,0xff7d51,0xd0ff93,0x9c9dff,0xff77d9,0xfff2a8];
   let built=-1, objects=[], enemies=[], platformMeshes=[], hazardMeshes=[], portal, portalCore, active=true;
   const biomeLooks=[
@@ -119,6 +124,19 @@
       tower.rotation.z=(rand()-.5)*.08;
       if(i%2===0){const windowMat=new T.MeshBasicMaterial({color:look.top});add(box(x,40+h*.55,-48,3,Math.max(8,h*.22),2,windowMat));}
     }
+    // Distinct silhouettes make each realm recognizable while the camera scrolls past them.
+    const landmarkMat=new T.MeshStandardMaterial({color:look.rock,emissive:look.glow,emissiveIntensity:.22,roughness:.78,metalness:.18});
+    const glowMat=new T.MeshBasicMaterial({color:look.top,transparent:true,opacity:.72});
+    for(let i=0;i<Math.ceil(s.worldW/360);i++){
+      const x=160+i*360+rand()*110,base=42+rand()*24;
+      if(s.biome===1||s.biome===8){add(box(x,base+45,-72,12,90,12,landmarkMat));const crown=add(make(new T.ConeGeometry(32,75,6),landmarkMat));crown.position.set(x,base+100,-72);crown.userData.floaty=true;crown.userData.baseY=base+100;crown.userData.phase=rand()*6;crown.userData.spin=.001;}
+      else if(s.biome===2){add(box(x,base+36,-72,13,72,10,green));add(box(x-12,base+35,-72,12,25,9,green));add(box(x+12,base+48,-72,12,22,9,green));}
+      else if(s.biome===3){const spire=add(make(new T.ConeGeometry(27,100+rand()*60,5),ice));spire.position.set(x,base+55,-70);}
+      else if(s.biome===7){const volcano=add(make(new T.ConeGeometry(58,115,7),landmarkMat));volcano.position.set(x,base+55,-70);add(ball(x,base+105,-66,9,glowMat));}
+      else if(s.biome===9||s.biome===4||s.biome===11){const ring=add(make(new T.TorusGeometry(30+rand()*14,3,7,24),glowMat));ring.position.set(x,base+80,-65);ring.rotation.x=.35;ring.userData.floaty=true;ring.userData.baseY=base+80;ring.userData.phase=rand()*6;ring.userData.spin=.008;}
+      else if(s.biome===5){const wreck=add(box(x,base+35,-70,60,55,15,landmarkMat));wreck.rotation.z=(rand()-.5)*.4;add(box(x,base+62,-62,20,5,3,glowMat));}
+      else {const arch=add(make(new T.TorusGeometry(28,5,7,20),landmarkMat));arch.position.set(x,base+72,-72);arch.rotation.x=Math.PI/2;add(box(x,base+20,-72,9,45,10,landmarkMat));}
+    }
     for(let i=0;i<70;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
     // Floating crystal clusters add parallax-like depth and an animated silhouette per world.
     for(let i=0;i<Math.ceil(s.worldW/230);i++){
@@ -137,7 +155,7 @@
     const topMat=M('#'+look.top.toString(16).padStart(6,'0'),'#'+look.glow.toString(16).padStart(6,'0'),.9,.45,.28);
     const sideMat=M('#'+look.rock.toString(16).padStart(6,'0'),'#'+look.glow.toString(16).padStart(6,'0'),.3,.35,.42);
     const movingMat=M('#32617a','#0d8193',.7,.65,.24);
-    const crumbleMat=M('#66506e','#b347a8',.65,.45,.35);
+    const crumbleMat=M('#5b3a61','#c22b7d',.9,.45,.32);const crumbleTopMat=M('#ff679b','#ff174f',1.8,.3,.24);const crackMat=M('#ffb0d0','#ff174f',1.5,.25,.3);
     // Biome-tinted ground cover: turf in gardens, moss in ancient worlds, frost in icy worlds.
     const coverColors=[0x5edb9a,0x63e779,0xd7b66a,0xc3f5ff,0xb5f46e,0x9ab69a,0x8ee9ed,0xf18b53,0x8bf17c,0x9da5d8,0xda8bdd,0x67e9bf];
     const cover=coverColors[s.biome]||0x5edb9a;
@@ -152,7 +170,8 @@
       const group=new T.Group();world.add(group);group.position.set(p.x+p.w/2,540-p.y-p.h/2,0);group.userData.source=p;add(group);platformMeshes.push(group);
       const material=p.type==='moving'?movingMat:p.type==='crumble'?crumbleMat:bodyMat;
       box(0,0,0,p.w,p.h,38,material,group);
-      box(0,p.h/2-2,21,p.w,4,5,p.type==='moving'?ice:topMat,group);
+      box(0,p.h/2-2,21,p.w,4,5,p.type==='crumble'?crumbleTopMat:p.type==='moving'?ice:topMat,group);
+      if(p.type==='crumble'){for(let ci=0;ci<4;ci++){const crack=box(-p.w*.32+ci*p.w*.2,p.h/2+1.1,25,Math.max(8,p.w*.14),1.5,1.2,crackMat,group);crack.rotation.z=ci%2===0?.48:-.62;}for(const edge of [-1,1]){const warning=box(edge*(p.w/2-3),0,22,3,p.h+3,3,pink,group);warning.material=crackMat;}}
       box(0,-p.h/2+2,20,p.w-8,2,3,sideMat,group);
       // Layered soil/turf lip makes the platform top read as a surface, not a bare cube.
       box(0,p.h/2+0.6,20,p.w-2,2.2,8,turfMat,group);
@@ -222,6 +241,10 @@
     const s=window.__iskra3dState();if(!s)return;if(s.level!==built)build(s);
     camera.position.x=s.cam+480;camera.lookAt(s.cam+480,270,0);rim.color.setHex(biomeColors[s.biome]||0x50f5e4);sun.color.setHex(biomeColors[s.biome]||0x50f5e4);
     const p=s.player, walk=Math.sin(p.anim||0);
+    sword.visible=s.weapon==='blade';pistol.visible=s.weapon==='pistol';laserGun.visible=s.weapon==='laser';heldWeapon.position.x=p.facing>0?15:-15;heldWeapon.scale.x=p.facing>0?1:-1;
+    while(projectileMeshes.length<(s.projectiles||[]).length){const mesh=box(0,0,0,16,5,5,cyan);projectileMeshes.push(mesh);}
+    while(projectileMeshes.length>(s.projectiles||[]).length){const mesh=projectileMeshes.pop();world.remove(mesh);mesh.geometry.dispose();}
+    (s.projectiles||[]).forEach((shot,i)=>{const mesh=projectileMeshes[i];mesh.visible=true;mesh.position.set(shot.x+shot.w/2,540-shot.y-shot.h/2,42);mesh.scale.x=shot.w/16;mesh.material.color.set(shot.color||'#50f5e4');mesh.material.emissive?.set(shot.color||'#50f5e4');});
     hero.position.set(p.x+p.w/2,540-p.y-p.h/2,38);
     hero.rotation.z=p.dash>0?-p.facing*.13:Math.max(-.14,Math.min(.14,-p.vx*.025));
     torso.scale.set(1+(p.dash>0?.16:0),p.dash>0?.82:(!p.grounded?1.05:1),1);
@@ -237,7 +260,7 @@
     bootGlowL.material.emissiveIntensity=bootGlowR.material.emissiveIntensity=p.dash>0?2.5:.6;
     aura.position.copy(hero.position);aura.material.opacity=p.dash>0?.28:.11;aura.scale.setScalar(p.dash>0?2.5:1.8);
     for(const o of objects){if(o.userData.floaty){o.position.y=o.userData.baseY+Math.sin(s.tick*.035+o.userData.phase)*7;o.rotation.y+=o.userData.spin||.005;o.rotation.z+=(o.userData.spin||.005)*.7;}const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.x=a.x;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
-    for(const g of platformMeshes){const p=g.userData.source;g.position.x=p.x+p.w/2;g.position.y=540-p.y-p.h/2;g.visible=!(p.crumbleGone>0);}
+    for(const g of platformMeshes){const p=g.userData.source;g.position.x=p.x+p.w/2;g.position.y=540-p.y-p.h/2;g.visible=!(p.crumbleGone>0);if(p.type==='crumble'){g.children.forEach(child=>{if(child.material===crackMat)child.material.emissiveIntensity=.8+Math.sin(s.tick*.22)*.8;});}}
     for(const g of hazardMeshes){const h=g.userData.source;g.position.x=h.x+h.w/2;g.position.y=540-h.y-h.h/2;g.visible=h.type!=='laser'||!!h.active;g.rotation.z=h.type==='wind'?Math.sin(s.tick*.04+h.phase)*.08:0;g.traverse(child=>{if(child.geometry&&child.geometry.type==='SphereGeometry'&&child.userData.phase!==undefined)child.position.y=Math.sin(s.tick*.1+child.userData.phase)*3;});}
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
     if(portal){portal.rotation.z+=.018;portal.scale.setScalar(1+Math.sin(s.tick*.08)*.08);portalCore.rotation.y+=.04;portalCore.scale.setScalar(1+Math.sin(s.tick*.1)*.14);}
