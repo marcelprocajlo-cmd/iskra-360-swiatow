@@ -1,4 +1,4 @@
 export type Language='pl'|'en';
 export const messages={pl:{gameTitle:'ISKRA: 360 Światów',newGame:'ROZPAL PIERWSZY PŁOMIEŃ',startHint:'← → / A D ruch · W / ↑ / SPACJA skok · Z atak · X dash',world:'Świat',crystals:'Kryształy',health:'Życie',levelComplete:'LATARNIA ROZPALONA',rhythm:'POZIOM RYTMICZNY',boss:'STRAŻNIK MROKU'},en:{gameTitle:'SPARK: 360 Worlds',newGame:'IGNITE THE FIRST FLAME',startHint:'← → / A D move · W / ↑ / SPACE jump · Z attack · X dash',world:'World',crystals:'Crystals',health:'Health',levelComplete:'BEACON IGNITED',rhythm:'RHYTHM LEVEL',boss:'DARK WARDEN'}} as const;
-export function translate<K extends keyof typeof messages.pl>(language:Language,key:K):(typeof messages.pl)[K]{return messages[language][key];}
+export function translate<K extends keyof typeof messages.pl>(language:Language,key:K):string{return messages[language][key];}
 export function getInitialLanguage():Language{const stored=localStorage.getItem('iskra360-language');return stored==='en'||(!stored&&navigator.language.toLowerCase().startsWith('en'))?'en':'pl';}
