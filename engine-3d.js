@@ -14,7 +14,17 @@
     return;
   }
   const T = window.THREE;
-  const renderer = new T.WebGLRenderer({canvas, alpha:false, antialias:true, powerPreference:'high-performance'});
+  let renderer;
+  try { renderer = new T.WebGLRenderer({canvas, alpha:false, antialias:true, powerPreference:'high-performance'}); }
+  catch (error) {
+    if (stageStatus) {
+      const note = document.createElement('div');
+      note.textContent = 'Nie udało się uruchomić grafiki 3D. Włącz akcelerację sprzętową/WebGL w przeglądarce.';
+      note.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;color:#e1ffff;font:700 18px/1.5 system-ui;background:radial-gradient(ellipse at 50% 30%,#163d59,#071329 75%);';
+      stageStatus.appendChild(note);
+    }
+    return;
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(960, 540, false);
   const scene = new T.Scene();
