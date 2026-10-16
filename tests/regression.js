@@ -7,6 +7,7 @@ const { createHarness } = require('./harness');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+const engine = fs.readFileSync(path.join(root, 'engine-3d.js'), 'utf8');
 assert.ok(inline, 'Główny skrypt inline musi istnieć');
 
 const tests = [];
@@ -139,6 +140,21 @@ test('17. Render 2D nie dubluje modeli 3D przedmiotów, wrogów i portalu', () =
   assert.match(inline, /if\(!window\.__iskra3dActive\)for\(let a of items\)/);
   assert.match(inline, /if\(!window\.__iskra3dActive\)for\(let a of enemies\)/);
   assert.match(inline, /if\(!window\.__iskra3dActive\)\{ctx\.fillStyle=pal\[2\]/);
+});
+
+test('19. Gra działa wyłącznie w trybie 3D bez przełącznika i pikselowego renderera', () => {
+  assert.doesNotMatch(html, /id="renderMode"/);
+  assert.doesNotMatch(html, /image-rendering:\s*pixelated/i);
+  assert.match(html, /#canvasStage #game\{[^}]*opacity:0/);
+  assert.match(engine, /new T\.WebGLRenderer\(\{canvas, alpha:false, antialias:true/);
+  assert.match(engine, /function buildBackdrop\(s,look\)/);
+  assert.match(engine, /Every collision platform is represented by a solid 3D block/);
+});
+
+test('20. Fizyka ma szybszą reakcję i wyższy, kontrolowany skok', () => {
+  const h = createHarness(html);
+  assert.ok(h.evaluate('PHYSICS.every(p => p.speed >= 4.8 && p.accel >= .9 && p.jump >= 12.2)'));
+  assert.match(inline, /if\(!keys\.jump&&p\.vy< -4\)p\.vy\*=\.82/);
 });
 
 test('18. Strażnik nadal zadaje obrażenia po wcześniejszym trafieniu atakiem', () => {
