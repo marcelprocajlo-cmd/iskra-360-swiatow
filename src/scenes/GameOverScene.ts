@@ -6,7 +6,7 @@ export class GameOverScene extends Phaser.Scene {
   constructor() { super('GameOverScene'); }
   create(): void {
     const language = getInitialLanguage();
-    const audio = this.game.registry.get('synthAudio');
+    const audio: unknown = this.game.registry.get('synthAudio') as unknown;
     if (audio instanceof SynthAudio && audio.isUnlocked()) audio.startMusic('menu');
     const { width, height } = this.scale;
     this.cameras.main.setBackgroundColor('#080817');
