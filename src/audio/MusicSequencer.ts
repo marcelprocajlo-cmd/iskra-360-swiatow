@@ -6,9 +6,8 @@ const midiHz = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
 export class MusicSequencer {
   private readonly clock = new BeatClock();
   private intensity = 0.18;
-  private theme: MusicTheme = 'menu';
   constructor(private readonly context: AudioContext, private readonly output: GainNode) {}
-  start(theme: MusicTheme): void { this.theme = theme; this.clock.start(this.context.currentTime, theme); }
+  start(theme: MusicTheme): void { this.clock.start(this.context.currentTime, theme); }
   stop(): void { this.clock.pause(); }
   setCalibration(milliseconds: number): void { this.clock.setCalibration(milliseconds); }
   update(intensity = this.intensity): void {
