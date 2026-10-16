@@ -151,6 +151,24 @@ test('19. Gra działa wyłącznie w trybie 3D bez przełącznika i pikselowego r
   assert.match(engine, /Every collision platform is represented by a solid 3D block/);
 });
 
+test('21. Model 3D Iskry ma wizjer, oczy, rdzeń energii, pancerz i detale kończyn', () => {
+  assert.match(engine, /const visor=make\(new T\.SphereGeometry/);
+  assert.match(engine, /const eyeL=ball\(/);
+  assert.match(engine, /const chestCore=ball\(/);
+  assert.match(engine, /const chestRing=make\(new T\.TorusGeometry/);
+  assert.match(engine, /const shoulderL=ball\(/);
+  assert.match(engine, /const bootGlowL=box\(/);
+});
+
+test('22. Animacje wtórne i kryształy otoczenia są aktualizowane w pętli 3D', () => {
+  assert.match(engine, /Secondary motion: squash\/stretch, articulated hands\/boots/);
+  assert.match(engine, /pupilL\.position\.x=/);
+  assert.match(engine, /chestRing\.rotation\.z\+=/);
+  assert.match(engine, /crystal\.userData\.floaty=true/);
+  assert.match(engine, /if\(o\.userData\.floaty\)\{/);
+  assert.match(engine, /o\.position\.y=o\.userData\.baseY\+Math\.sin/);
+});
+
 test('20. Fizyka ma szybszą reakcję i wyższy, kontrolowany skok', () => {
   const h = createHarness(html);
   assert.ok(h.evaluate('PHYSICS.every(p => p.speed >= 4.8 && p.accel >= .9 && p.jump >= 12.2)'));
