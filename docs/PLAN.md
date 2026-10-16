@@ -26,3 +26,18 @@
 
 ## Ryzyka i uczciwość
 Proceduralna grafika może być bardziej geometryczna niż malarska; redukujemy to gradientami, warstwami, miękkim światłem, ziarnem i animacją, nie obietnicą fotorealizmu. Zielone testy Node nie zastępują przeglądarki, Playwrighta, testu dotykowego ani pomiaru FPS. Obecny walidator sprawdza strukturę/spawn/wyjście, ale solver zasięgu skoku i dash pozostaje zadaniem przed wydaniem kampanii.
+
+
+## Current implementation status
+
+- **Stage 0:** plan, art bible, story and repository rules are present.
+- **Stage 1:** Phaser/Vite/strict TS, fixed-step player controller, keyboard/pad/touch input, PL/EN strings and versioned save migration are implemented. Full key rebinding remains open.
+- **Stage 2:** procedural parallax, cached grain, biome silhouettes and Verlet flame tail are implemented. CI captures screenshots, but a human has not yet reviewed them for art direction.
+- **Stage 3:** combo/charge/throw foundations, one patrol enemy, timed power-ups and game-over/retry exist. Boss phases, complete hazard interactions and per-biome enemy rosters remain.
+- **Stage 4:** synthesized SFX, volume buses and an AudioContext-time music sequencer exist. Musical composition and transitions still need tuning.
+- **Stage 5:** main menu, world map, level selection and settings exist. Shop, achievements, daily challenge and speedrun UI remain.
+- **Stage 6:** 20 level definitions exist, but they reuse five base layouts with biome-specific variations. Bespoke level-by-level design and a jump/glide/dash reachability solver remain.
+- **Stages 7–8:** BeatClock is tested, but rhythm auto-run gameplay, infinite mode, daily seed mode and deterministic ghost replay are not implemented.
+- **Stage 9:** CI covers build, unit/regression tests, lint, structure validation and Playwright smoke. FPS profiling and manual browser art review remain.
+
+The preceding code snapshot passed all CI gates including Playwright: [run 38957856261](https://github.com/marcelprocajlo-cmd/iskra-360-swiatow/actions/runs/38957856261). The `iskra-visual-smoke` artifact contains menu, first-world and world-map screenshots; artifact output is not committed as PNG files.
