@@ -8,7 +8,7 @@ Uruchom z katalogu głównego repozytorium:
 node tests/regression.js
 ```
 
-Zestaw sprawdza uruchomienie gry w lekkim środowisku DOM/Canvas, sanitizację uszkodzonego zapisu, generator 360 poziomów, harmonogram bossów, stały krok 60 Hz, tarcie pustyni, blokadę następnego poziomu, aktualizację AI przy modelach 3D, nietykalność po utracie osłony, kruszenie platform, kopię zapasową, kotwiczenie obiektów, coyote time, granicę świata, autorepeat klawiszy oraz renderowanie bez ponownego generowania poziomu.
+Zestaw sprawdza uruchomienie gry w lekkim środowisku DOM/Canvas, sanitizację uszkodzonego zapisu, generator 360 poziomów, harmonogram bossów, stały krok 60 Hz, tarcie pustyni, blokadę następnego poziomu, aktualizację AI przy modelach 3D, kolizję ze strażnikiem po trafieniu, nietykalność po utracie osłony, kruszenie platform, kopię zapasową, kotwiczenie obiektów, coyote time, granicę świata, autorepeat klawiszy oraz renderowanie bez ponownego generowania poziomu.
 
 Testy są wykonywane w Node.js i nie są testem prawdziwej przeglądarki ani WebGL.
 
@@ -16,7 +16,7 @@ Testy są wykonywane w Node.js i nie są testem prawdziwej przeglądarki ani Web
 
 - Otwórz poziomy 1, 30, 61, 90, 180 i 360.
 - Sprawdź ruch, skok, podwójny skok, dash, atak i pauzę.
-- Włącz/wyłącz modele 3D; potwierdź brak zdublowanych sprite'ów oraz działanie AI.
+- Włącz/wyłącz modele 3D; potwierdź brak zdublowanych sprite'ów oraz działanie AI. Sprawdź, że strażnik nadal zadaje obrażenia po wcześniejszym trafieniu atakiem.
 - Sprawdź ruchome i kruche platformy, kolce, lasery, lawę i checkpoint.
 - Sprawdź zapis, odświeżenie, reset i przywrócenie kopii.
 - W DevTools sprawdź błędy w Console oraz status `index.html`, `engine-3d.js` i biblioteki Three.js w Network.
