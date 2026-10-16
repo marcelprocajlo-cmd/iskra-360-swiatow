@@ -9,17 +9,19 @@ Otwórz `index.html` w nowoczesnej przeglądarce. Nie wymaga instalacji zależno
 ## Sterowanie
 
 - A / D lub strzałki: ruch z rozpędzaniem i wyhamowaniem
-- W, strzałka w górę lub spacja: skok; przytrzymanie zmienia wysokość skoku
+- W, strzałka w górę lub spacja: skok ze zmienną wysokością
 - Drugi skok: ponowne naciśnięcie w powietrzu
-- X lub Shift: dash (krótki zryw z czasem odnowienia)
-- Skok przy ścianie: odbicie od ściany, gdy Iskra się przy niej zsuwa
-- Na telefonie używaj przycisków ekranowych, w tym DASH
+- X lub Shift: dash, czyli krótki zryw z czasem odnowienia
+- Skok przy ścianie: odbicie od ściany podczas zsuwania
+- Na telefonie: przyciski ekranowe, w tym DASH
 
 ## Mechaniki
 
 - 360 poziomów: 12 biomów po 30 etapów
-- Parametry ruchu zmieniają się między biomami
+- Parametry ruchu różnią się między biomami
+- Kolizje poziome i pionowe z platformami
 - Ruchome platformy, platformy sprężynowe i kruche
+- Punkty kontrolne, które zapamiętują miejsce odrodzenia w bieżącym poziomie
 - Kolce, przeciwnicy, kryształy, klucze i portale
 - Lokalny zapis postępu w przeglądarce
 
