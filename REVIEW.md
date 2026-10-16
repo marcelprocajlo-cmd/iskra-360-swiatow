@@ -17,3 +17,7 @@ Znane problemy zgłoszone w legacy i nieuznawane za rozwiązane przez samą migr
 ## Walidacja
 
 Zielone testy jednostkowe nie dowodzą jakości wizualnej, poprawności dotyku/pada ani stabilnych 60 FPS. Każdy z tych punktów wymaga uruchomienia w przeglądarce i jawnego raportu. Nie deklarować ukończonego buildu, dopóki CI nie potwierdzi build/test/lint/validate.
+
+## Przebudowa — fundament (commit 4806daa)
+
+Nowa architektura została dodana na gałęzi `feat/phaser-rewrite`: Vite/Phaser/TypeScript, kontroler ze stałym krokiem, migracja zapisu, słowniki PL/EN, dane 4×5 poziomów oraz prototyp pierwszej sceny. Build i testy CI są w trakcie weryfikacji; nie należy traktować tego prototypu jako pełnej gry ani finalnej oprawy.
