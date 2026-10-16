@@ -142,10 +142,10 @@ test('17. Render 2D nie dubluje modeli 3D przedmiotów, wrogów i portalu', () =
   assert.match(inline, /if\(!window\.__iskra3dActive\)\{ctx\.fillStyle=pal\[2\]/);
 });
 
-test('19. Gra działa wyłącznie w trybie 3D bez przełącznika i pikselowego renderera', () => {
+test('19. Tryb 3D jest domyślny, ale canvas 2D pozostaje widoczny do startu renderera', () => {
   assert.doesNotMatch(html, /id="renderMode"/);
   assert.doesNotMatch(html, /image-rendering:\s*pixelated/i);
-  assert.match(html, /#canvasStage #game\{[^}]*opacity:0/);
+  assert.match(html, /#canvasStage #game\{[^}]*opacity:1/);\n  assert.match(engine, /fallbackCanvas\.style\.opacity='0'/);\n  assert.match(engine, /show2DFallback\('Tryb 3D niedostępny/);
   assert.match(engine, /new T\.WebGLRenderer\(\{canvas, alpha:false, antialias:true/);
   assert.match(engine, /function buildBackdrop\(s,look\)/);
   assert.match(engine, /Every collision platform is represented by a solid 3D block/);
@@ -173,7 +173,7 @@ test('23. Platformy 3D mają warstwę trawy dopasowaną do biomu', () => {
   assert.match(engine, /const coverColors=\[/);
   assert.match(engine, /const turfMat=new T\.MeshStandardMaterial/);
   assert.match(engine, /Layered soil\/turf lip makes the platform top read as a surface/);
-  assert.match(engine, /const tuftCount=Math\.max\(2,Math\.floor\(p\.w\/43\)\)/);
+  assert.match(engine, /const tuftCount=Math\.max\(4,Math\.floor\(p\.w\/22\)\)/);\n  assert.match(engine, /userData\.grassSway=true/);
   assert.match(engine, /make\(grassGeo,bladeMat,group\)/);
 });
 
@@ -246,3 +246,18 @@ for (const { name, fn } of tests) {
 }
 process.stdout.write('\nWynik: ' + (tests.length - failed) + '/' + tests.length + ' testów zaliczonych.\n');
 if (failed) process.exitCode = 1;
+
+test('30. Każda kraina ma gradient atmosferyczny, własne dekoracje i ruchome efekty', () => {
+  assert.match(engine, /new T\.ShaderMaterial\(/);
+  assert.match(engine, /function randSeed\(n\)/);
+  assert.match(engine, /if\(s\.biome===0\)/);
+  assert.match(engine, /else if\(s\.biome===1\|\|s\.biome===8\)/);
+  assert.match(engine, /else if\(s\.biome===2\)/);
+  assert.match(engine, /else if\(s\.biome===3\)/);
+  assert.match(engine, /else if\(s\.biome===4\|\|s\.biome===9\)/);
+  assert.match(engine, /else if\(s\.biome===6\)/);
+  assert.match(engine, /else if\(s\.biome===7\)/);
+  assert.match(engine, /else if\(s\.biome===10\)/);
+  assert.match(engine, /userData\.atmosphere=true/);
+  assert.match(engine, /if\(o\.userData\.cloudDrift\)/);
+});
