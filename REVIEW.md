@@ -22,7 +22,7 @@ W gałęzi `fix/regression-debug-2026-10` poprawiono:
 
 ## Testy
 
-**Ostatni przebieg GitHub Actions przed ostatnią poprawką: 17/17 testów zaliczonych. Dodano test 18 dotyczący kolizji ze strażnikiem; nowy przebieg CI powinien go zweryfikować.** (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
+**Aktualny przebieg GitHub Actions: 18/18 testów zaliczonych** (Node.js 22, 16 października 2026). (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
 
 Uruchom z katalogu głównego repozytorium:
 
