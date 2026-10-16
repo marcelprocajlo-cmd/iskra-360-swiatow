@@ -45,7 +45,7 @@
   for(let i=0;i<110;i++){const s=ball((i*137)%1500,(i*71)%540,-100,.8+(i%3)*.4,new T.MeshBasicMaterial({color:i%5===0?0x50f5e4:0x9bb7d9,transparent:true,opacity:.32}));stars.push(s);}
   const biomeColors=[0x50f5e4,0x8df6a8,0xffd777,0xb4e7ff,0xfa78f5,0xffb66d,0xe0faff,0xff7d51,0xd0ff93,0x9c9dff,0xff77d9,0xfff2a8];
   let built=-1, objects=[], enemies=[], portal, portalCore, active=true;
-  function clear(){for(const o of objects){world.remove(o);if(o.geometry)o.geometry.dispose();if(o.material && ![cyan,white,gold,dark,blue,purple,pink,ice,stone,green].includes(o.material))o.material.dispose();}objects=[];enemies=[];portal=null;portalCore=null;}
+  function clear(){for(const g of enemies)world.remove(g);for(const o of objects){world.remove(o);if(o.geometry)o.geometry.dispose();if(o.material && ![cyan,white,gold,dark,blue,purple,pink,ice,stone,green].includes(o.material))o.material.dispose();}objects=[];enemies=[];portal=null;portalCore=null;}
   function add(o){objects.push(o);return o;}
   function build(s){
     clear();
