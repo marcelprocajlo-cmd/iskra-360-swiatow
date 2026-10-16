@@ -30,7 +30,7 @@ function update(){tick++;if(won)return;let p=player,oldY=p.y,oldX=p.x,phys=PHYSI
 if(p.grounded){p.coyote=8;p.jumps=0}else p.coyote=Math.max(0,p.coyote-1);
 if(jumpPressed)p.jumpBuffer=8;else p.jumpBuffer=Math.max(0,p.jumpBuffer-1);jumpPressed=false;
 let dir=(keys.right?1:0)-(keys.left?1:0);
-if(dir){p.vx+=dir*phys.accel;p.vx=Math.max(-phys.speed,Math.min(phys.speed,p.vx));p.facing=dir}else p.vx*=phys.friction;if(biome===2&&!dir&&p.grounded)p.vx*=.96;if(biome===6&&p.vy>0)p.vy*=.985;if(biome===7&&p.vy>0)p.vy+=.035;if(p.dash>0){p.vx=p.facing*10.5;p.dash--;}
+if(dir){p.vx+=dir*phys.accel;p.vx=Math.max(-phys.speed,Math.min(phys.speed,p.vx));p.facing=dir}else p.vx*=phys.friction;if(biome===2&&!dir&&p.grounded)p.vx/=Math.max(.1,phys.friction)*.97;if(biome===6&&p.vy>0)p.vy*=.985;if(biome===7&&p.vy>0)p.vy+=.035;if(p.dash>0){p.vx=p.facing*10.5;p.dash--;}
 if(Math.abs(p.vx)<.08)p.vx=0;
 if(p.jumpBuffer>0&&(p.coyote>0||p.jumps<2||p.wall!==0)){if(p.wall!==0){p.vy=-phys.jump*1.02;p.vx=-p.wall*phys.speed*1.45;p.facing=-p.wall;p.jumps=1}else{p.vy=-(phys.jump*(p.jumps===1?.88:1));p.jumps++}p.grounded=false;p.coyote=0;p.jumpBuffer=0}
 if(!keys.jump&&p.vy< -4)p.vy*=.82;if(!p.grounded&&p.vy>0&&((keys.left&&p.x>0)||(keys.right))){let wallHit=platforms.some(a=>p.y+p.h>a.y+3&&p.y<a.y+a.h&&((keys.left&&p.x>=a.x+a.w-5&&p.x<a.x+a.w+3)||(keys.right&&p.x+p.w>=a.x-3&&p.x+p.w<=a.x+5)));if(wallHit){p.vy=Math.min(p.vy,2.2);p.wall=keys.left?-1:1}else p.wall=0}else p.wall=0;
