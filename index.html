@@ -49,7 +49,7 @@ if(dir){p.vx+=dir*phys.accel;p.vx=Math.max(-phys.speed,Math.min(phys.speed,p.vx)
 if(biome===6&&p.vy>0)p.vy*=.985;if(biome===7&&p.vy>0)p.vy+=.035;
 if(p.dash>0){p.vx=p.facing*10.5;p.dash--}
 if(Math.abs(p.vx)<.08)p.vx=0;
-const jumpPower=phys.jump+(saved.upgrades.jump||0)*.45;if(p.jumpBuffer>0&&(p.coyote>0||p.jumps<2||p.wall!==0)){
+const jumpPower=phys.jump+(saved.upgrades.jump||0)*.45;if(p.jumpBuffer>0&&((p.coyote>0&&p.jumps===0)||p.jumps===1||p.wall!==0)){
  if(p.wall!==0){p.vy=-jumpPower*1.02;p.vx=-p.wall*phys.speed*1.45;p.facing=-p.wall;p.jumps=1}
  else{p.vy=-(jumpPower*(p.jumps===1?.88:1));p.jumps++}
  p.grounded=false;p.coyote=0;p.jumpBuffer=0;p.support=null;burst(p.x+p.w/2,p.y+p.h,'#8df6ff',7,2);
