@@ -25,7 +25,7 @@
     }
     return;
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
   renderer.setSize(960, 540, false);
   const scene = new T.Scene();
   const camera = new T.OrthographicCamera(-480,480,270,-270,.1,2500);
@@ -138,7 +138,7 @@
       else if(s.biome===5){const wreck=add(box(x,base+35,-70,60,55,15,landmarkMat));wreck.rotation.z=(rand()-.5)*.4;add(box(x,base+62,-62,20,5,3,glowMat));}
       else {const arch=add(make(new T.TorusGeometry(28,5,7,20),landmarkMat));arch.position.set(x,base+72,-72);arch.rotation.x=Math.PI/2;add(box(x,base+20,-72,9,45,10,landmarkMat));}
     }
-    for(let i=0;i<70;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
+    for(let i=0;i<36;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
     // Floating crystal clusters add parallax-like depth and an animated silhouette per world.
     for(let i=0;i<Math.ceil(s.worldW/230);i++){
       const x=70+i*230+rand()*75,y=90+rand()*285,z=-18-rand()*22,size=5+rand()*9;
@@ -237,8 +237,16 @@
   }
   function resize(){renderer.setSize(stage.clientWidth||960,stage.clientHeight||540,false);camera.updateProjectionMatrix();}
   if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener('resize',resize);resize();
+  function fallback3D(error){
+    active=false;window.__iskra3dActive=false;canvas.style.display='none';
+    const fallback=document.getElementById('game');if(fallback)fallback.style.opacity='1';
+    const toast=document.getElementById('toast');if(toast)toast.textContent='Tryb 3D został wyłączony po błędzie grafiki. Gra działa w trybie awaryjnym 2D.';
+    if(error)console.error('ISKRA 360: wyłączono renderer 3D',error);
+  }
+  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();fallback3D(new Error('Utracono kontekst WebGL'));});
   function frame(){
     requestAnimationFrame(frame);if(!active)return;
+    try{
     const s=window.__iskra3dState();if(!s)return;if(s.level!==built)build(s);
     camera.position.x=s.cam+480;camera.lookAt(s.cam+480,270,0);rim.color.setHex(biomeColors[s.biome]||0x50f5e4);sun.color.setHex(biomeColors[s.biome]||0x50f5e4);
     const p=s.player, walk=Math.sin(p.anim||0);
@@ -266,6 +274,7 @@
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
     if(portal){portal.rotation.z+=.018;portal.scale.setScalar(1+Math.sin(s.tick*.08)*.08);portalCore.rotation.y+=.04;portalCore.scale.setScalar(1+Math.sin(s.tick*.1)*.14);}
     renderer.render(scene,camera);
+    }catch(error){fallback3D(error);}
   }
   window.__iskra3dActive=true;frame();
 })();
