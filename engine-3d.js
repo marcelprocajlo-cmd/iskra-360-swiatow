@@ -138,14 +138,46 @@
     const sideMat=M('#'+look.rock.toString(16).padStart(6,'0'),'#'+look.glow.toString(16).padStart(6,'0'),.3,.35,.42);
     const movingMat=M('#32617a','#0d8193',.7,.65,.24);
     const crumbleMat=M('#66506e','#b347a8',.65,.45,.35);
+    // Biome-tinted ground cover: turf in gardens, moss in ancient worlds, frost in icy worlds.
+    const coverColors=[0x5edb9a,0x63e779,0xd7b66a,0xc3f5ff,0xb5f46e,0x9ab69a,0x8ee9ed,0xf18b53,0x8bf17c,0x9da5d8,0xda8bdd,0x67e9bf];
+    const cover=coverColors[s.biome]||0x5edb9a;
+    const turfMat=new T.MeshStandardMaterial({color:cover,emissive:cover,emissiveIntensity:.28,roughness:.86,metalness:.02});
+    const bladeMat=new T.MeshStandardMaterial({color:cover,emissive:cover,emissiveIntensity:.42,roughness:.72,side:T.DoubleSide});
+    const flowerMats=[M('#ffe7a1','#ffc04d',.8,.05,.3),M('#ff9fda','#e94aa9',.8,.05,.3),M('#d8f6ff','#75cfff',.8,.05,.3)];
+    const pebbleMat=M('#9ab6a9','#477e77',.12,.08,.92);
+    const grassGeo=new T.ConeGeometry(2.1,9,4);
+    const pebbleGeo=new T.DodecahedronGeometry(2.4,0);
     // Every collision platform is represented by a solid 3D block with a lit edge.
-    for(const p of s.platforms){
+    for(const [pi,p] of s.platforms.entries()){
       const group=new T.Group();world.add(group);group.position.set(p.x+p.w/2,540-p.y-p.h/2,0);group.userData.source=p;add(group);platformMeshes.push(group);
       const material=p.type==='moving'?movingMat:p.type==='crumble'?crumbleMat:bodyMat;
       box(0,0,0,p.w,p.h,38,material,group);
       box(0,p.h/2-2,21,p.w,4,5,p.type==='moving'?ice:topMat,group);
       box(0,-p.h/2+2,20,p.w-8,2,3,sideMat,group);
+      // Layered soil/turf lip makes the platform top read as a surface, not a bare cube.
+      box(0,p.h/2+0.6,20,p.w-2,2.2,8,turfMat,group);
+      box(-p.w*.28,p.h/2-5,20,Math.max(8,p.w*.12),2.5,3,sideMat,group);
+      box(p.w*.31,p.h/2-8,20,Math.max(7,p.w*.09),2,3,sideMat,group);
       for(let j=-1;j<=1;j++){if(p.w>100)box(j*p.w*.27,0,20,2,p.h-5,1,sideMat,group);}
+      // Deterministic grass tufts, scattered pebbles and occasional biome flowers.
+      const tuftCount=Math.max(2,Math.floor(p.w/43));
+      for(let gi=0;gi<tuftCount;gi++){
+        const gx=-p.w*.43+(gi+.5)*(p.w*.86/tuftCount);
+        const hash=((Math.floor(p.x+31)*17+gi*37+pi*13)>>>0);
+        if(hash%5===0&&tuftCount>2)continue;
+        const h1=5+(hash%7),h2=4+((hash>>>3)%6);
+        const blade1=make(grassGeo,bladeMat,group);blade1.scale.set(.72,h1/9,.72);blade1.position.set(gx,p.h/2+1+h1/2,24);blade1.rotation.z=((hash%9)-4)*.07;
+        const blade2=make(grassGeo,bladeMat,group);blade2.scale.set(.62,h2/9,.62);blade2.position.set(gx+3,p.h/2+1+h2/2,24.5);blade2.rotation.z=-.18;
+        if((s.biome===1||s.biome===8||s.biome===0||s.biome===11)&&hash%3===0){
+          const fm=flowerMats[(hash>>>4)%flowerMats.length];
+          const stem=box(gx+5,p.h/2+3.5,24,1,6,1,green,group);
+          const bloom=make(new T.SphereGeometry(2.6,8,6),fm,group);bloom.position.set(gx+5,p.h/2+7,25);
+          const petal=make(new T.SphereGeometry(1.5,7,5),white,group);petal.position.set(gx+5,p.h/2+7,27);
+        }
+        if(hash%4===0){
+          const pebble=make(pebbleGeo,pebbleMat,group);pebble.position.set(gx-4,p.h/2+2,24);pebble.scale.set(1.4,.6,.8);pebble.rotation.y=(hash%7)*.3;
+        }
+      }
       if(p.type==='moving'){const rail=box(0,-p.h/2-8,-4,p.w+12,2,6,sideMat,group);rail.userData.rail=true;}
     }
     for(const h of s.hazards){
