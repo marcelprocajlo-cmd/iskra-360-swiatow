@@ -85,10 +85,15 @@ function createHarness(html, initialStorage = {}) {
     setTimeout: noop, clearTimeout: noop
   };
   vm.createContext(sandbox);
-  vm.runInContext(inline[1], sandbox, { timeout: 3000, filename: 'index.inline.js' });
+  const hookAt = inline[1].lastIndexOf('})();');
+  if (hookAt < 0) throw new Error('Nie można wstrzyknąć hooka testowego do IIFE gry');
+  const testableSource = inline[1].slice(0, hookAt) +
+    'window.__testEval = (expression) => eval(expression);\\n' +
+    inline[1].slice(hookAt);
+  vm.runInContext(testableSource, sandbox, { timeout: 3000, filename: 'index.inline.js' });
 
   return {
-    evaluate(expression) { return vm.runInContext(expression, sandbox, { timeout: 3000 }); },
+    evaluate(expression) { return window.__testEval(expression); },
     dispatch(type, event) { window.dispatch(type, event); },
     element: getElementById, storage, context: sandbox
   };
