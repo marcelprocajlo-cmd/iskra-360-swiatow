@@ -72,6 +72,7 @@
   const sword=box(4,-1,0,3,22,3,gold,heldWeapon);sword.rotation.z=-.42;box(4,-9,0,8,3,4,blue,heldWeapon).rotation.z=-.42;
   const pistol=box(3,-1,0,10,5,5,dark,heldWeapon);box(8,0,0,5,2,3,gold,heldWeapon);
   const laserGun=box(3,-1,0,12,6,5,cyan,heldWeapon);box(10,-1,0,7,3,3,white,heldWeapon);
+  const muzzleFlash=ball(0,0,0,5,gold,hero);muzzleFlash.visible=false;
   let projectileMeshes=[];
   const biomeColors=[0x50f5e4,0x8df6a8,0xffd777,0xb4e7ff,0xfa78f5,0xffb66d,0xe0faff,0xff7d51,0xd0ff93,0x9c9dff,0xff77d9,0xfff2a8];
   let built=-1, objects=[], enemies=[], platformMeshes=[], hazardMeshes=[], portal, portalCore, active=true;
@@ -241,7 +242,7 @@
     const s=window.__iskra3dState();if(!s)return;if(s.level!==built)build(s);
     camera.position.x=s.cam+480;camera.lookAt(s.cam+480,270,0);rim.color.setHex(biomeColors[s.biome]||0x50f5e4);sun.color.setHex(biomeColors[s.biome]||0x50f5e4);
     const p=s.player, walk=Math.sin(p.anim||0);
-    sword.visible=s.weapon==='blade';pistol.visible=s.weapon==='pistol';laserGun.visible=s.weapon==='laser';heldWeapon.position.x=p.facing>0?15:-15;heldWeapon.scale.x=p.facing>0?1:-1;
+    sword.visible=s.weapon==='blade';pistol.visible=s.weapon==='pistol';laserGun.visible=s.weapon==='laser';heldWeapon.position.x=p.facing>0?15:-15;heldWeapon.scale.x=p.facing>0?1:-1;sword.rotation.z=-.42+(s.weapon==='blade'&&p.attackTimer>0?p.facing*.9:0);muzzleFlash.visible=p.attackTimer>0&&s.weapon!=='blade';muzzleFlash.position.set(p.facing>0?25:-25,0,16);muzzleFlash.scale.setScalar(.7+Math.sin(s.tick*.8)*.25);muzzleFlash.material.color.set(s.weapon==='pistol'?'#ffd777':'#50f5e4');
     while(projectileMeshes.length<(s.projectiles||[]).length){const mesh=box(0,0,0,16,5,5,cyan);projectileMeshes.push(mesh);}
     while(projectileMeshes.length>(s.projectiles||[]).length){const mesh=projectileMeshes.pop();world.remove(mesh);mesh.geometry.dispose();}
     (s.projectiles||[]).forEach((shot,i)=>{const mesh=projectileMeshes[i];mesh.visible=true;mesh.position.set(shot.x+shot.w/2,540-shot.y-shot.h/2,42);mesh.scale.x=shot.w/16;mesh.material.color.set(shot.color||'#50f5e4');mesh.material.emissive?.set(shot.color||'#50f5e4');});
