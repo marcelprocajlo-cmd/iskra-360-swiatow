@@ -145,7 +145,9 @@ test('17. Render 2D nie dubluje modeli 3D przedmiotów, wrogów i portalu', () =
 test('19. Tryb 3D jest domyślny, ale canvas 2D pozostaje widoczny do startu renderera', () => {
   assert.doesNotMatch(html, /id="renderMode"/);
   assert.doesNotMatch(html, /image-rendering:\s*pixelated/i);
-  assert.match(html, /#canvasStage #game\{[^}]*opacity:1/);\n  assert.match(engine, /fallbackCanvas\.style\.opacity='0'/);\n  assert.match(engine, /show2DFallback\('Tryb 3D niedostępny/);
+  assert.match(html, /#canvasStage #game\{[^}]*opacity:1/);
+  assert.match(engine, /fallbackCanvas\.style\.opacity='0'/);
+  assert.match(engine, /show2DFallback\('Tryb 3D niedostępny/);
   assert.match(engine, /new T\.WebGLRenderer\(\{canvas, alpha:false, antialias:true/);
   assert.match(engine, /function buildBackdrop\(s,look\)/);
   assert.match(engine, /Every collision platform is represented by a solid 3D block/);
@@ -173,7 +175,8 @@ test('23. Platformy 3D mają warstwę trawy dopasowaną do biomu', () => {
   assert.match(engine, /const coverColors=\[/);
   assert.match(engine, /const turfMat=new T\.MeshStandardMaterial/);
   assert.match(engine, /Layered soil\/turf lip makes the platform top read as a surface/);
-  assert.match(engine, /const tuftCount=Math\.max\(4,Math\.floor\(p\.w\/22\)\)/);\n  assert.match(engine, /userData\.grassSway=true/);
+  assert.match(engine, /const tuftCount=Math\.max\(4,Math\.floor\(p\.w\/22\)\)/);
+  assert.match(engine, /userData\.grassSway=true/);
   assert.match(engine, /make\(grassGeo,bladeMat,group\)/);
 });
 
