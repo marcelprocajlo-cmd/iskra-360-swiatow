@@ -5,9 +5,9 @@ const path = require('node:path');
 const { createHarness } = require('./harness');
 
 const root = path.resolve(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'legacy', 'index.html'), 'utf8');
 const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-const engine = fs.readFileSync(path.join(root, 'engine-3d.js'), 'utf8');
+const engine = fs.readFileSync(path.join(root, 'legacy', 'engine-3d.js'), 'utf8');
 assert.ok(inline, 'Główny skrypt inline musi istnieć');
 
 const tests = [];

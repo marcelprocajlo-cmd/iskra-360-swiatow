@@ -1,0 +1,2 @@
+import {describe,expect,it} from 'vitest';import {createRng} from './rng';
+describe('createRng',()=>{it('repeats a sequence for the same seed',()=>{const a=createRng(123),b=createRng(123);expect(Array.from({length:12},a)).toEqual(Array.from({length:12},b));});it('returns values in [0,1)',()=>{const next=createRng(7);for(let i=0;i<100;i++){const v=next();expect(v).toBeGreaterThanOrEqual(0);expect(v).toBeLessThan(1);}});});

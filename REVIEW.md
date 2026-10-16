@@ -1,49 +1,19 @@
-# Przegląd i poprawki regresyjne — ISKRA: 360 Światów
+# REVIEW — stan legacy i przebudowy
 
-## Zakres zmian
+## Wersja legacy
 
-W gałęzi `fix/regression-debug-2026-10` poprawiono:
+Wersja referencyjna została zachowana w `legacy/index.html` i `legacy/engine-3d.js`. Jej regresje uruchamia `node tests/regression.js`; to testy Node/VM, nie test prawdziwego renderera ani przeglądarki.
 
-- stały krok symulacji 60 Hz zamiast aktualizacji zależnej od odświeżania ekranu;
-- tarcie w Pustyni Luster (poziomy 61–90), które mogło zwiększać prędkość po puszczeniu ruchu;
-- blokadę przycisku „Następny poziom” do czasu ukończenia bieżącego poziomu;
-- aktualizację AI i kolizji wrogów także wtedy, gdy renderowane są modele 3D;
-- zachowanie kolizji z bossem po trafieniu — trafienie nie wyłącza już kolizji z graczem;
-- okno nietykalności po utracie osłony i po odbiciu od przeciwnika;
-- cykl kruchych platform: 35 klatek ostrzeżenia, 100 klatek nieobecności;
-- sanitizację uszkodzonego zapisu, w tym `unlocked: "abc"`;
-- zachowanie kopii zapasowej pomiędzy kolejnymi zapisami oraz snapshot przed resetem/przywróceniem;
-- podążanie kryształów i kolców za ruchomymi platformami;
-- coyote time i warunek pierwszego skoku;
-- prawą granicę świata;
-- ignorowanie autorepeat dla klawiszy ataku/dasha;
-- usunięcie generowania poziomu z funkcji rysującej wykonywanej każdą klatkę;
-- ograniczenie rysowania duplikatów 2D, gdy aktywne są modele 3D.
+Znane problemy zgłoszone w legacy i nieuznawane za rozwiązane przez samą migrację: farmienie kryształów przy powtarzaniu poziomu, brak pełnej mechaniki kluczy i serc, niepełna ochrona przed wszystkimi hazardami, brak dopracowanego ekranu game over oraz niezweryfikowana przechodniość wszystkich 360 generowanych poziomów.
 
-## Testy
+## Przebudowa Phaser
 
-**Aktualny przebieg GitHub Actions: 18/18 testów zaliczonych** (Node.js 22, 16 października 2026). (Node.js 22, 16 października 2026). To testy regresyjne w lekkim środowisku DOM/Canvas, nie test prawdziwej przeglądarki.
+- Nowy punkt wejścia: Vite + Phaser 3.90.0 + TypeScript strict.
+- Logika ruchu jest wydzielona do czystego kontrolera z krokiem 60 Hz; dodano testy bufora skoku, podwójnego skoku, dasha i szybowania.
+- Zapis otrzymał wersję 2, sanityzację i migrację pól legacy (odblokowanie, kryształy, ukończone poziomy, ulepszenia); backup może być użyty, gdy główny JSON jest uszkodzony.
+- Dane kampanii deklarują 4 światy × 5 poziomów; poziom rytmiczny to numer 3, boss numer 5.
+- Pierwszy vertical slice jest prototypem technicznym, nie finalnym poziomem komercyjnym. Walka, power-upy, audio, sekrety, ekran game over, solver przechodniości i testy Playwright pozostają do wykonania w kolejnych etapach.
 
-Uruchom z katalogu głównego repozytorium:
+## Walidacja
 
-```bash
-node tests/regression.js
-```
-
-Zestaw testów tworzy lekkie środowisko DOM/Canvas w Node.js i uruchamia kod gry w VM. Testy nie zastępują ręcznej kontroli w Chrome/Firefox, testów dotykowych ani sprawdzenia renderera WebGL.
-
-## Znane ograniczenia / decyzje niezmieniane
-
-- Kryształy można nadal zdobywać ponownie przez powtarzanie poziomu; nie zmieniano ekonomii gry.
-- Klucze i hearts nadal nie mają pełnej mechaniki użycia.
-- Osłona nadal nie neutralizuje kolców, laserów ani lawy.
-- Testy symulacyjne nie dowodzą, że każdy z 360 poziomów da się ukończyć przy każdym stylu gry.
-- Nie deklarujemy testu w prawdziwej przeglądarce; ten zestaw to regresje w Node.js.
-
-## Zalecany test ręczny
-
-1. Uruchom poziomy 1, 30, 61, 90, 180 i 360.
-2. Sprawdź skok po zejściu z krawędzi, dash, osłonę i kruchą platformę.
-3. Na poziomie z bossem włącz modele 3D i potwierdź, że boss nadal się porusza i przyjmuje obrażenia.
-4. Odśwież stronę, sprawdź zapis, reset i przywrócenie kopii.
-5. Otwórz DevTools Console i Network; upewnij się, że `engine-3d.js` ładuje się jako JavaScript, a nie jako HTML.
+Zielone testy jednostkowe nie dowodzą jakości wizualnej, poprawności dotyku/pada ani stabilnych 60 FPS. Każdy z tych punktów wymaga uruchomienia w przeglądarce i jawnego raportu. Nie deklarować ukończonego buildu, dopóki CI nie potwierdzi build/test/lint/validate.
