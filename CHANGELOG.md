@@ -58,3 +58,12 @@
 - Rozdzielono logikę aktualizacji wrogów od renderowania modeli 3D, żeby AI działało także w trybie 3D.
 - Dodano `tests/regression.js`, `tests/harness.js` i raport `REVIEW.md`.
 - Usunięto globalne przepisywanie ścieżek z `vercel.json`, które mogło zwracać `index.html` zamiast plików JS i archiwów.
+
+
+## Unreleased — Phaser rewrite
+
+- Added Phaser 3 + Vite + TypeScript strict foundation, preserving the original game under `legacy/`.
+- Added procedural parallax art, cached grain, a Verlet flame tail, a world map, settings and a game-over/retry flow.
+- Added combat state machine, patrol enemy, timed power-ups, synthesized SFX and audio-time music sequencing.
+- Added versioned save migration, per-level reward tracking, PL/EN localization, Vitest/regression tests and Playwright smoke screenshots.
+- Scope remains a vertical slice: boss phases, bespoke level layouts, reachability solver, full hazards, secrets, shop/meta modes and infinite/daily/ghost modes are still open.
