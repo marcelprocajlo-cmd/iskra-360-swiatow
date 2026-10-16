@@ -77,3 +77,10 @@
 - Added synthesized SFX, AudioContext-time music sequencing, settings, PL/EN strings, versioned save migration and resilient storage fallbacks.
 - Added Vitest/regression tests, level structure validation, Playwright smoke and screenshot artifacts.
 - Remaining production scope includes handcrafted/reachability-verified levels, boss phases, biome-specific enemy behaviors, full hazards, meta modes, rhythm auto-run, infinite/daily/ghost modes, performance profiling and manual visual review.
+
+
+## Unreleased — boss encounters
+
+- Added dedicated 12-HP boss actors to each world's fifth level.
+- Added deterministic awakening, hunt and enraged phases with increasing movement speed and a larger crystal reward.
+- Added unit tests for boss phase thresholds and invalid health inputs.
