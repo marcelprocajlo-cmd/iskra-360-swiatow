@@ -32,7 +32,7 @@ test('world map opens and starts the first unlocked story level', async ({ page 
   if (!bounds) throw new Error('Canvas did not receive layout bounds');
   await canvas.click({ position: { x: bounds.width * 0.125 + 100, y: bounds.height * 0.66 + 20 } });
   await page.waitForTimeout(350);
-  await page.screenshot({ path: 'docs/shots/world-map.png' });
+  await canvas.screenshot({ path: 'docs/shots/world-map.png', timeout: 15000, animations: 'disabled' });
   await canvas.click({ position: { x: bounds.width * (127 / 1280), y: bounds.height * (233 / 720) } });
   await page.waitForTimeout(350);
   expect(pageErrors).toEqual([]);
