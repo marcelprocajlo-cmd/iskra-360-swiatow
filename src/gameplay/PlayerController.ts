@@ -24,7 +24,7 @@ export function stepPlayer(p:PlayerState,input:PlayerInput,platforms:readonly Pl
   if(!input.jumpHeld&&p.vy< -180&&!p.jumpCutApplied){p.vy*=.58;p.jumpCutApplied=true;}
   p.vy=Math.min(p.vy,900);
   const oldX=p.x;p.x+=p.vx*dt;p.wall=0;
-  for(const platform of platforms){if(!overlaps(p,platform))continue;if(p.vx>0&&oldX+p.width<=platform.x+8){p.x=platform.x-p.width;p.wall=1;}else if(p.vx<0&&oldX>=platform.x+platform.width-8){p.x=platform.x+platform.width;p.wall=-1;}else continue;p.vx=0;}
+  for(const platform of platforms){if(!overlaps(p,platform))continue;if(p.vx>0&&oldX+p.width<=platform.x+8){p.x=platform.x-p.width;p.wall=1;}else if(p.vx<0&&oldX>=platform.x+platform.width-8){p.x=platform.x+platform.width;p.wall=-1;}else continue;p.vx=0;}for(const platform of platforms){const verticalOverlap=p.y<platform.y+platform.height&&p.y+p.height>platform.y;if(!verticalOverlap)continue;if(Math.abs(p.x+p.width-platform.x)<1.1)p.wall=1;else if(Math.abs(p.x-(platform.x+platform.width))<1.1)p.wall=-1;}
   if(p.wall!==0&&p.vy>180)p.vy=Math.min(p.vy,180);
   const oldY=p.y;p.y+=p.vy*dt;p.grounded=false;
   for(const platform of platforms){if(!overlaps(p,platform))continue;if(p.vy>=0&&oldY+p.height<=platform.y+8){p.y=platform.y-p.height;p.vy=0;p.grounded=true;p.jumps=0;p.glideStamina=Math.min(1,p.glideStamina+dt*2);}else if(!platform.oneWay&&p.vy<0&&oldY>=platform.y+platform.height-4){p.y=platform.y+platform.height;p.vy=0;}}
