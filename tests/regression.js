@@ -81,7 +81,7 @@ test('9. Osłona daje okno nietykalności po kontakcie', () => {
   h.evaluate('start(1); let a=enemies.find(e=>e.alive); player.x=a.x; player.y=a.y; player.vx=0; player.vy=0; player.shields=1; player.inv=0; update()');
   assert.equal(h.evaluate('player.shields'), 0);
   assert.ok(h.evaluate('player.inv') > 0);
-  assert.match(inline, /p\.shields--;p\.inv=45/);
+  assert.match(inline, /p\.shields--;p\.inv=75/);
 });
 
 test('10. Krucha platforma odlicza czas i znika czasowo, a nie od razu', () => {
@@ -197,6 +197,29 @@ test('18. Strażnik nadal zadaje obrażenia po wcześniejszym trafieniu atakiem'
   h.evaluate('update()');
   assert.equal(h.evaluate('lives'), 2);
   assert.match(inline, /if\(!a\.alive\)continue;if\(rect\(p,a\)\)/);
+});
+
+
+test('25. HP zwykłych przeciwników i strażników rośnie wraz z poziomem', () => {
+  const h = createHarness(html);
+  assert.ok(h.evaluate('generate(360).enemies.find(e=>!e.boss).maxHp') > h.evaluate('generate(1).enemies.find(e=>!e.boss).maxHp'));
+  assert.ok(h.evaluate('generate(360).enemies.find(e=>e.boss).maxHp') > h.evaluate('generate(30).enemies.find(e=>e.boss).maxHp'));
+});
+
+test('26. Ekwipunek oferuje ostrze, pistolet i laser, a pociski zadają określone obrażenia', () => {
+  assert.match(html, /id="weaponBlade"/);
+  assert.match(html, /id="weaponPistol"/);
+  assert.match(html, /id="weaponLaser"/);
+  assert.match(inline, /damage:2,color:'#ffd777'/);
+  assert.match(inline, /damage:3,color:'#50f5e4'/);
+  assert.match(inline, /damageEnemy\(e,shot\.damage\)/);
+});
+
+test('27. Osłona pochłania kontakt z kolcami i innymi pułapkami', () => {
+  assert.match(inline, /Osłona pochłonęła pułapkę/);
+  assert.match(inline, /if\(rect\(p,h\)&&!p\.inv&&!dashActive/);
+  assert.match(engine, /crumbleTopMat/);
+  assert.match(engine, /if\(p\.type==='crumble'\)/);
 });
 
 let failed = 0;
