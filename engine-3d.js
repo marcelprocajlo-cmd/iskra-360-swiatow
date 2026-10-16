@@ -3,26 +3,28 @@
   const canvas = document.getElementById('game3d');
   const stage = document.getElementById('canvasStage');
   const stageStatus = document.getElementById('canvasStage');
-  if (!canvas || !window.THREE || !window.__iskra3dState) {
+  function show2DFallback(message, error) {
+    window.__iskra3dActive = false;
+    if (canvas) { canvas.style.display = 'none'; canvas.setAttribute('aria-hidden', 'true'); }
+    const fallback = document.getElementById('game');
+    if (fallback) { fallback.style.display = 'block'; fallback.style.opacity = '1'; fallback.style.pointerEvents = 'auto'; fallback.setAttribute('aria-hidden', 'false'); }
     if (stageStatus) {
       stageStatus.style.background = '#071329';
-      const note = document.createElement('div');
-      note.textContent = 'Tryb 3D wymaga WebGL i połączenia z biblioteką Three.js.';
-      note.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;color:#e1ffff;font:700 18px/1.5 system-ui;background:radial-gradient(ellipse at 50% 30%,#163d59,#071329 75%);';
-      stageStatus.appendChild(note);
+      let note = document.getElementById('iskra3dFallbackNote');
+      if (!note) { note = document.createElement('div'); note.id = 'iskra3dFallbackNote'; note.style.cssText = 'position:absolute;left:8px;right:8px;bottom:8px;z-index:3;padding:6px 10px;text-align:center;color:#e1ffff;font:600 12px/1.35 system-ui;background:#071329cc;border:1px solid #50f5e455;border-radius:8px;'; stageStatus.appendChild(note); }
+      note.textContent = message;
     }
+    if (error) console.error('ISKRA 360: tryb 3D niedostępny, uruchomiono 2D', error);
+  }
+  if (!canvas || !window.THREE || !window.__iskra3dState) {
+    show2DFallback('Tryb 3D niedostępny — uruchomiono tryb awaryjny 2D.');
     return;
   }
   const T = window.THREE;
   let renderer;
   try { renderer = new T.WebGLRenderer({canvas, alpha:false, antialias:true, powerPreference:'high-performance'}); }
   catch (error) {
-    if (stageStatus) {
-      const note = document.createElement('div');
-      note.textContent = 'Nie udało się uruchomić grafiki 3D. Włącz akcelerację sprzętową/WebGL w przeglądarce.';
-      note.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;color:#e1ffff;font:700 18px/1.5 system-ui;background:radial-gradient(ellipse at 50% 30%,#163d59,#071329 75%);';
-      stageStatus.appendChild(note);
-    }
+    show2DFallback('Nie udało się uruchomić 3D — działa tryb awaryjny 2D.', error);
     return;
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
@@ -237,11 +239,10 @@
   }
   function resize(){renderer.setSize(stage.clientWidth||960,stage.clientHeight||540,false);camera.updateProjectionMatrix();}
   if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener('resize',resize);resize();
-  function fallback3D(error){
-    active=false;window.__iskra3dActive=false;canvas.style.display='none';
-    const fallback=document.getElementById('game');if(fallback)fallback.style.opacity='1';
-    const toast=document.getElementById('toast');if(toast)toast.textContent='Tryb 3D został wyłączony po błędzie grafiki. Gra działa w trybie awaryjnym 2D.';
-    if(error)console.error('ISKRA 360: wyłączono renderer 3D',error);
+  function fallback3D(error) {
+    active=false;
+    show2DFallback('Tryb 3D został wyłączony po błędzie grafiki — gra działa w 2D.', error);
+    try { renderer.dispose(); } catch (_) {}
   }
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();fallback3D(new Error('Utracono kontekst WebGL'));});
   function frame(){
