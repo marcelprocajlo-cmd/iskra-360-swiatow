@@ -26,8 +26,16 @@ function updateStats(){$('levelStat').textContent=level+' / 360';$('coinStat').t
 function renderMap(){let map=$('map');map.innerHTML='';for(let i=1;i<=360;i++){let b=document.createElement('button');b.className='level'+((saved.done||[]).includes(i)?' done':'')+(i===level?' current':'');b.textContent=i;b.disabled=i>(saved.unlocked||1);b.title='Poziom '+i;b.onclick=()=>start(i);map.append(b)}}
 function rect(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
 function respawn(){lives--;if(lives<=0){lives=3;player.x=30;player.y=GROUND-40;coins=Math.max(0,coins-5);$('toast').textContent='Powrót do punktu startu. Utracono 5 kryształów.'}else{player.x=30;player.y=GROUND-40;$('toast').textContent='Ups! Spróbuj ponownie.'}player.vx=player.vy=0;player.grounded=false;player.coyote=0;player.jumpBuffer=0;player.jumps=0;player.inv=90;updateStats()}
-function update(){tick++;if(won)return;let p=player,oldY=p.y;p.vx=(keys.right?1:0)-(keys.left?1:0);p.vx*=3.8;if((keys.jump||keys.up)&&p.grounded){p.vy=-11.8;p.grounded=false}p.vy=Math.min(14,p.vy+.52);p.x=Math.max(0,p.x+p.vx);p.y+=p.vy;p.grounded=false;
-for(let a of platforms){if(a.type==='moving')a.y=a.baseY+Math.sin(tick*.045+a.phase)*a.amp;if(p.vy>=0&&oldY+p.h<=a.y+5&&p.y+p.h>=a.y&&p.x+p.w>a.x&&p.x<a.x+a.w){p.y=a.y-p.h;p.vy=0;p.grounded=true}}
+function update(){tick++;if(won)return;let p=player,oldY=p.y,phys=PHYSICS[Math.floor((level-1)/30)];p.anim+=Math.abs(p.vx)*.12;
+if(p.grounded){p.coyote=8;p.jumps=0}else p.coyote=Math.max(0,p.coyote-1);
+if(jumpPressed)p.jumpBuffer=8;else p.jumpBuffer=Math.max(0,p.jumpBuffer-1);jumpPressed=false;
+let dir=(keys.right?1:0)-(keys.left?1:0);
+if(dir){p.vx+=dir*phys.accel;p.vx=Math.max(-phys.speed,Math.min(phys.speed,p.vx));p.facing=dir}else p.vx*=phys.friction;
+if(Math.abs(p.vx)<.08)p.vx=0;
+if(p.jumpBuffer>0&&(p.coyote>0||p.jumps<2)){p.vy=-(phys.jump*(p.jumps===1?.88:1));p.grounded=false;p.coyote=0;p.jumps++;p.jumpBuffer=0}
+if(!keys.jump&&p.vy< -4)p.vy*=.82;
+p.vy=Math.min(14,p.vy+phys.gravity);p.x=Math.max(0,p.x+p.vx);p.y+=p.vy;p.grounded=false;
+for(let a of platforms){if(a.type==='moving')a.y=a.baseY+Math.sin(tick*.045+a.phase)*a.amp;if(a.type==='crumble'&&a.crumble>0)a.crumble--;if(p.vy>=0&&oldY+p.h<=a.y+5&&p.y+p.h>=a.y&&p.x+p.w>a.x&&p.x<a.x+a.w&&a.crumble===0){p.y=a.y-p.h;if(a.type==='bounce'){p.vy=-15;p.jumps=0;$('toast').textContent='Platforma sprężynowa!'}else{p.vy=0;p.grounded=true;if(a.type==='crumble')a.crumble=35}}}
 if(p.y>H+120){respawn()}for(let a of items){if(!a.got&&rect(p,{x:a.x-9,y:a.y-9,w:18,h:18})){a.got=true;if(a.type==='coin'){coins++;$('toast').textContent='+1 kryształ ✧'}else{p.keys++;$('toast').textContent='Klucz znaleziony! ◈'}updateStats()}}
 for(let a of enemies){if(!a.alive)continue;a.x+=a.dir*(a.boss?1.2:.8);if(a.x<a.min||a.x+a.w>a.max){a.dir*=-1}if(rect(p,a)){if(p.vy>1&&oldY+p.h<=a.y+12){a.alive=false;p.vy=-8;$('toast').textContent=a.boss?'Strażnik pokonany! ◆':'Przeciwnik pokonany!'}else if(!p.inv){if(p.shields>0)p.shields--;else respawn()}}}
 for(let h of hazards){if(rect(p,h)&&!p.inv)respawn()}if(p.inv>0)p.inv--;if(rect(p,portal)){if(level%30===0&&enemies.some(e=>e.boss&&e.alive)){/* boss must fall */}else{won=true;if(!(saved.done||[]).includes(level))saved.done.push(level);saved.unlocked=Math.max(saved.unlocked,Math.min(360,level+1));saved.coins=coins;persist();renderMap();updateStats();$('toast').textContent=level===360?'Serce Wszechświata odnowione! Wygrałeś!':'Poziom ukończony! Nagroda: +5 kryształów';coins+=5;saved.coins=coins;persist();updateStats()}}
