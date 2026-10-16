@@ -1,9 +1,8 @@
 'use strict';
-const fs = require('node:fs');
 const vm = require('node:vm');
 
 function createHarness(html, initialStorage = {}) {
-  const inline = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+  const inline = html.match(/<script>([\s\S]*?)<\/script>/);
   if (!inline) throw new Error('Nie znaleziono głównego skryptu inline w index.html');
 
   const listeners = new Map();
@@ -19,32 +18,19 @@ function createHarness(html, initialStorage = {}) {
       if (prop in target) return target[prop];
       return noop;
     },
-    set(target, prop, value) {
-      target[prop] = value;
-      return true;
-    }
+    set(target, prop, value) { target[prop] = value; return true; }
   });
 
   class FakeElement {
     constructor(id = '') {
-      this.id = id;
-      this.style = {};
-      this.dataset = {};
-      this.children = [];
-      this.listeners = new Map();
-      this.textContent = '';
-      this.innerHTML = '';
-      this.className = '';
-      this.disabled = false;
-      this.hidden = false;
-      this.width = 960;
-      this.height = 540;
-      this.value = '';
+      this.id = id; this.style = {}; this.dataset = {}; this.children = [];
+      this.listeners = new Map(); this.textContent = ''; this.innerHTML = '';
+      this.className = ''; this.disabled = false; this.hidden = false;
+      this.width = 960; this.height = 540; this.value = '';
     }
     addEventListener(type, fn) {
       const list = this.listeners.get(type) || [];
-      list.push(fn);
-      this.listeners.set(type, list);
+      list.push(fn); this.listeners.set(type, list);
     }
     dispatch(type, event = {}) {
       for (const fn of this.listeners.get(type) || []) fn({ preventDefault: noop, ...event });
@@ -58,7 +44,7 @@ function createHarness(html, initialStorage = {}) {
   }
 
   const elements = new Map();
-  for (const match of html.matchAll(/\\bid=["']([^"']+)["']/g)) {
+  for (const match of html.matchAll(/\bid=["']([^"']+)["']/g)) {
     if (!elements.has(match[1])) elements.set(match[1], new FakeElement(match[1]));
   }
   const getElementById = id => {
@@ -70,10 +56,9 @@ function createHarness(html, initialStorage = {}) {
     createElement: tag => new FakeElement(tag),
     querySelector: selector => selector.startsWith('#') ? getElementById(selector.slice(1)) : null,
     querySelectorAll: () => [],
-    addEventListener: (type, fn) => {
+    addEventListener(type, fn) {
       const list = listeners.get('document:' + type) || [];
-      list.push(fn);
-      listeners.set('document:' + type, list);
+      list.push(fn); listeners.set('document:' + type, list);
     }
   };
   const localStorage = {
@@ -85,22 +70,18 @@ function createHarness(html, initialStorage = {}) {
   const window = {
     addEventListener(type, fn) {
       const list = listeners.get(type) || [];
-      list.push(fn);
-      listeners.set(type, list);
+      list.push(fn); listeners.set(type, list);
     },
     dispatch(type, event = {}) {
       for (const fn of listeners.get(type) || []) fn({ preventDefault: noop, repeat: false, ...event });
     },
-    localStorage,
-    __iskra3dActive: false,
-    devicePixelRatio: 1
+    localStorage, __iskra3dActive: false, devicePixelRatio: 1
   };
   const sandbox = {
     window, document, localStorage, console, Math, JSON, Number, Array, Object, Set, Map,
     Date, parseInt, parseFloat, isFinite, confirm: () => true, alert: noop,
     requestAnimationFrame: noop, cancelAnimationFrame: noop,
-    performance: { now: () => 0 },
-    AudioContext: undefined, URLSearchParams,
+    performance: { now: () => 0 }, URLSearchParams,
     setTimeout: noop, clearTimeout: noop
   };
   vm.createContext(sandbox);
@@ -109,10 +90,7 @@ function createHarness(html, initialStorage = {}) {
   return {
     evaluate(expression) { return vm.runInContext(expression, sandbox, { timeout: 3000 }); },
     dispatch(type, event) { window.dispatch(type, event); },
-    element: getElementById,
-    storage,
-    context: sandbox
+    element: getElementById, storage, context: sandbox
   };
 }
-
 module.exports = { createHarness };
