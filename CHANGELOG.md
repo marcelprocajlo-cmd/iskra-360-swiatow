@@ -1,4 +1,16 @@
+## 2026-10-16 — Pełny tryb 3D i poprawa sterowania
+
+- Usunięto przełącznik renderowania 2D/3D; prezentacja gry pozostaje w trybie 3D.
+- Zastąpiono widoczne pikselowe tło i platformy trójwymiarowymi bryłami, warstwowymi panoramami biomów, świecącymi krawędziami, modelami pułapek i checkpointów.
+- Usprawniono parametry ruchu: szybsza reakcja na kierunek, wyższy i bardziej kontrolowany skok, przy zachowaniu różnic między biomami.
+- Dodano czytelny komunikat, jeśli przeglądarka nie udostępnia WebGL/Three.js.
+- Dodano testy regresji trybu 3D i parametrów fizyki.
+
 # Changelog
+
+## Poprawki regresyjne — październik 2026
+- Rozdzielono obsługę trafienia atakiem od kolizji z wrogiem, aby trafiony strażnik nadal stanowił zagrożenie.
+- Dodano test regresyjny dla kolizji z bossem po wcześniejszym trafieniu.
 
 ## Etap 09 — modele 3D na planszy 2D
 - Zachowano klasyczną planszę platformówki 2D: tła, platformy i pułapki nadal rysuje Canvas.
@@ -37,3 +49,12 @@
 ## Etap 01 — stabilność
 - Naprawiono nieprawidłowe znaki nowej linii w skrypcie.
 - Kryształy i kary walutowe są zapisywane natychmiast.
+
+
+## Debugowanie regresji — październik 2026
+- Dodano stały krok symulacji 60 Hz i poprawiono tarcie Pustyni Luster.
+- Naprawiono blokadę następnego poziomu, coyote time, kruszenie platform, nietykalność i granicę świata.
+- Zabezpieczono parsowanie zapisu i kopię zapasową; ruchome platformy przenoszą przypięte kryształy oraz kolce.
+- Rozdzielono logikę aktualizacji wrogów od renderowania modeli 3D, żeby AI działało także w trybie 3D.
+- Dodano `tests/regression.js`, `tests/harness.js` i raport `REVIEW.md`.
+- Usunięto globalne przepisywanie ścieżek z `vercel.json`, które mogło zwracać `index.html` zamiast plików JS i archiwów.

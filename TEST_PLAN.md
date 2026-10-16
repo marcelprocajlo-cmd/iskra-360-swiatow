@@ -1,24 +1,26 @@
 # Plan testów — ISKRA: 360 Światów
 
-## Kontrole automatyczne wykonane
-- Parsowanie składni JavaScript w skrypcie osadzonym w `index.html`: PASS.
-- Brak literalnych sekwencji `\\n` w HTML: PASS.
-- Uruchomienie skryptu z atrapami DOM, Canvas, localStorage i requestAnimationFrame: PASS.
-- Utworzenie mapy 360 przycisków i przełączenie kolejno wszystkich 360 poziomów w środowisku symulowanym: PASS.
-- Obsługa przycisków pauzy, pomocy sterowania, dźwięku i zakup ulepszenia w środowisku symulowanym: PASS.
-- Potwierdzenie utworzenia bieżącego zapisu i kopii zapasowej w środowisku symulowanym: PASS.
+## Automatyczne testy regresyjne
 
-## Testy ręczne wymagane przed publikacją
-1. Otworzyć `index.html` w aktualnej wersji Chrome, Firefox, Edge i Safari.
-2. Sprawdzić ruch, skok, podwójny skok, wall jump, dash i atak.
-3. Przejść poziomy z ruchomymi, kruchymi, sprężynowymi i lodowymi platformami.
-4. Sprawdzić wiatr w Pustyni Luster, lawę w Wulkanicznym Pulsie i cykliczne lasery.
-5. Pokonać strażnika na poziomie 30: potwierdzić 3 punkty życia, szarżę, nagrodę i blokadę portalu do czasu pokonania bossa.
-6. Kupić każde ulepszenie, odświeżyć stronę i potwierdzić zachowanie postępu.
-7. Ukończyć ten sam poziom ponownie i sprawdzić, że nagroda za pierwsze ukończenie nie jest przyznawana drugi raz.
-8. Sprawdzić osiągnięcia, statystyki, reset zapisu i odzyskiwanie kopii.
-9. Przetestować pauzę, wyłączenie dźwięku, panel sterowania oraz przyciski dotykowe na telefonie.
-10. Sprawdzić konsolę przeglądarki, rozmiary ekranu, wydajność i odświeżenie strony.
+Uruchom z katalogu głównego repozytorium:
 
-## Ograniczenia raportu
-Test symulowany w środowisku narzędziowym nie emuluje pełnego silnika przeglądarki, fizycznego dotyku, rzeczywistego dźwięku ani zachowania Canvas w różnych przeglądarkach. Przed publikacją wymagane są testy ręczne z listy powyżej.
+```bash
+node tests/regression.js
+```
+
+Zestaw sprawdza uruchomienie gry w lekkim środowisku DOM/Canvas, sanitizację uszkodzonego zapisu, generator 360 poziomów, harmonogram bossów, stały krok 60 Hz, tarcie pustyni, blokadę następnego poziomu, aktualizację AI przy modelach 3D, kolizję ze strażnikiem po trafieniu, nietykalność po utracie osłony, kruszenie platform, kopię zapasową, kotwiczenie obiektów, coyote time, granicę świata, autorepeat klawiszy oraz renderowanie bez ponownego generowania poziomu.
+
+Testy są wykonywane w Node.js i nie są testem prawdziwej przeglądarki ani WebGL.
+
+## Ręczny test przeglądarkowy
+
+- Otwórz poziomy 1, 30, 61, 90, 180 i 360.
+- Sprawdź ruch, skok, podwójny skok, dash, atak i pauzę.
+- Włącz/wyłącz modele 3D; potwierdź brak zdublowanych sprite'ów oraz działanie AI. Sprawdź, że strażnik nadal zadaje obrażenia po wcześniejszym trafieniu atakiem.
+- Sprawdź ruchome i kruche platformy, kolce, lasery, lawę i checkpoint.
+- Sprawdź zapis, odświeżenie, reset i przywrócenie kopii.
+- W DevTools sprawdź błędy w Console oraz status `index.html`, `engine-3d.js` i biblioteki Three.js w Network.
+
+## Ograniczenia
+
+Testy regresyjne nie potwierdzają samodzielnie przechodniości wszystkich 360 poziomów ani poprawności na każdym urządzeniu.
