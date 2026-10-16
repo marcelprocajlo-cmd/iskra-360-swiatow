@@ -222,6 +222,23 @@ test('27. Osłona pochłania kontakt z kolcami i innymi pułapkami', () => {
   assert.match(engine, /if\(p\.type==='crumble'\)/);
 });
 
+
+test('28. Naciśnięcie ataku tworzy widoczny pocisk z wybranego lasera', () => {
+  const h = createHarness(html);
+  const result = h.evaluate('start(1); weapon="laser"; attackPressed=true; update(); ({count:projectiles.length,damage:projectiles[0]&&projectiles[0].damage,color:projectiles[0]&&projectiles[0].color})');
+  assert.equal(result.count, 1);
+  assert.equal(result.damage, 3);
+  assert.equal(result.color, '#50f5e4');
+  assert.match(engine, /muzzleFlash\.visible=p\.attackTimer>0/);
+});
+
+test('29. Pocisk trafiający przeciwnika odejmuje mu określone HP', () => {
+  const h = createHarness(html);
+  const result = h.evaluate('start(1); const e=enemies.find(e=>e.alive); const before=e.hp; projectiles=[{x:e.x,y:e.y,w:20,h:20,vx:0,damage:3,color:"#50f5e4",life:5}]; update(); ({before,after:e.hp,count:projectiles.length})');
+  assert.ok(result.after < result.before);
+  assert.equal(result.count, 0);
+});
+
 let failed = 0;
 for (const { name, fn } of tests) {
   try { fn(); process.stdout.write('PASS ' + name + '\n'); }
