@@ -24,3 +24,14 @@ Testy są wykonywane w Node.js i nie są testem prawdziwej przeglądarki ani Web
 ## Ograniczenia
 
 Testy regresyjne nie potwierdzają samodzielnie przechodniości wszystkich 360 poziomów ani poprawności na każdym urządzeniu.
+
+
+## Phaser rewrite automated gates
+
+1. `npm run build` — strict TypeScript and Vite production bundle.
+2. `npm test` — Vitest modules plus legacy regression harness.
+3. `npm run lint` — ESLint.
+4. `npm run validate:levels` — structure, IDs, spawn and exit (not a reachability solver).
+5. `npm run test:e2e` — Playwright Chromium smoke for menu, first world, world map, mobile-sized viewport, and page errors. Screenshots are uploaded as the `iskra-visual-smoke` workflow artifact.
+
+A screenshot artifact is not a substitute for human art-direction review. No FPS claim is made without a measured performance report.
