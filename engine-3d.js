@@ -52,7 +52,19 @@
   const helmet=ball(0,0,0,10,blue,head);helmet.scale.set(1.05,.88,.8);
   box(0,-1,7,14,5,2,dark,head);box(3,0,8.5,5,2,1,white,head);ball(-1,-6,0,2,gold,head);
   const antenna=limb(head,white,8,1.3);antenna.position.set(0,8,0);ball(0,8,0,2.4,gold,head);
+  // Layered faceplate, optical lenses and cheek armour make the hero readable at game scale.
+  const visor=make(new T.SphereGeometry(1,24,16),M('#071b30','#06243c',.55,.85,.12),head);visor.scale.set(7.6,3.5,1.9);visor.position.set(0,-1,7.2);
+  const eyeL=ball(-3.1,-.4,9.1,1.45,white,head),eyeR=ball(3.1,-.4,9.1,1.45,white,head);
+  const pupilL=ball(-2.8,-.6,10.2,.62,cyan,head),pupilR=ball(3.4,-.6,10.2,.62,cyan,head);
+  const cheekL=box(-7,-4,7.8,3.2,3.8,2.3,purple,head),cheekR=box(7,-4,7.8,3.2,3.8,2.3,purple,head);
+  const crest=make(new T.ConeGeometry(3,7,5),gold,head);crest.position.set(0,8,0);crest.rotation.z=.08;
+  const chestCore=ball(0,1,9,3.7,white,torso);chestCore.material=M('#e1ffff','#43f6e4',2.8,.5,.14);
+  const chestRing=make(new T.TorusGeometry(5.2,.8,8,28),gold,torso);chestRing.position.set(0,1,9);chestRing.rotation.x=.15;
+  const shoulderL=ball(-13,5,0,5,blue,torso),shoulderR=ball(13,5,0,5,blue,torso);
   const armL=limb(torso,blue,12,4),armR=limb(torso,blue,12,4),legL=limb(torso,dark,11,5),legR=limb(torso,dark,11,5);
+  const handL=ball(-13,-8,0,4.2,ice,torso),handR=ball(13,-8,0,4.2,ice,torso);
+  const bootL=box(-6,-22,2,10,5,12,purple,torso),bootR=box(6,-22,2,10,5,12,purple,torso);
+  const bootGlowL=box(-6,-20,8,6,1.3,2,cyan,torso),bootGlowR=box(6,-20,8,6,1.3,2,cyan,torso);
   armL.position.set(-13,4,0);armR.position.set(13,4,0);legL.position.set(-6,-11,0);legR.position.set(6,-11,0);
   box(0,0,-8,12,15,7,dark,torso);box(0,4,-12,6,6,2,purple,torso);
   const aura=ball(0,0,-8,17, new T.MeshBasicMaterial({color:0x43f6e4,transparent:true,opacity:.11}));aura.scale.set(1.8,1.8,.3);
@@ -108,6 +120,15 @@
       if(i%2===0){const windowMat=new T.MeshBasicMaterial({color:look.top});add(box(x,40+h*.55,-48,3,Math.max(8,h*.22),2,windowMat));}
     }
     for(let i=0;i<70;i++){const x=rand()*s.worldW,y=140+rand()*370;const star=add(box(x,y,-45,1+rand()*2,1+rand()*2,1,new T.MeshBasicMaterial({color:i%4===0?look.top:0xc4dcff,transparent:true,opacity:.25+rand()*.55})));star.userData.star=true;star.userData.phase=rand()*6;}
+    // Floating crystal clusters add parallax-like depth and an animated silhouette per world.
+    for(let i=0;i<Math.ceil(s.worldW/230);i++){
+      const x=70+i*230+rand()*75,y=90+rand()*285,z=-18-rand()*22,size=5+rand()*9;
+      const crystal=add(make(new T.OctahedronGeometry(size,1),new T.MeshStandardMaterial({color:look.top,emissive:look.glow,emissiveIntensity:.8,metalness:.55,roughness:.2,transparent:true,opacity:.82})));
+      crystal.position.set(x,y,z);crystal.rotation.set(rand()*2,rand()*2,rand()*2);
+      crystal.userData.floaty=true;crystal.userData.baseY=y;crystal.userData.phase=rand()*Math.PI*2;crystal.userData.spin=.004+rand()*.009;
+      const shardGlow=add(ball(x,y,z+3,size*.45,new T.MeshBasicMaterial({color:look.top,transparent:true,opacity:.18})));
+      shardGlow.userData.floaty=true;shardGlow.userData.baseY=y;shardGlow.userData.phase=crystal.userData.phase+.7;shardGlow.userData.spin=-.006;
+    }
   }
   function build(s){
     clear();
@@ -174,8 +195,16 @@
     torso.scale.set(1+(p.dash>0?.16:0),p.dash>0?.82:(!p.grounded?1.05:1),1);
     head.rotation.z=Math.sin(s.tick*.045)*.06;armL.rotation.z=p.grounded?walk*.55:-.6;armR.rotation.z=p.grounded?-walk*.55:.6;
     legL.rotation.z=p.grounded?-walk*.48:.2;legR.rotation.z=p.grounded?walk*.48:-.2;antenna.rotation.z=Math.sin(s.tick*.12)*.13;
+    // Secondary motion: squash/stretch, articulated hands/boots, eye focus and pulsing energy core.
+    head.rotation.x=p.vx*.012;eyeL.position.y=eyeR.position.y=-.4+Math.sin(s.tick*.08)*.12;
+    pupilL.position.x=-2.8+Math.max(-.35,Math.min(.35,p.vx*.08));pupilR.position.x=3.4+Math.max(-.35,Math.min(.35,p.vx*.08));
+    shoulderL.rotation.z=Math.sin(s.tick*.1)*.08;shoulderR.rotation.z=-Math.sin(s.tick*.1)*.08;
+    handL.position.y=-8+(p.grounded?Math.max(0,walk)*1.5:0);handR.position.y=-8+(p.grounded?Math.max(0,-walk)*1.5:0);
+    bootL.rotation.z=legL.rotation.z*.7;bootR.rotation.z=legR.rotation.z*.7;
+    chestCore.scale.setScalar(1+Math.sin(s.tick*.16)*.12+(p.dash>0?.35:0));chestRing.rotation.z+=.025+(p.dash>0?.06:0);
+    bootGlowL.material.emissiveIntensity=bootGlowR.material.emissiveIntensity=p.dash>0?2.5:.6;
     aura.position.copy(hero.position);aura.material.opacity=p.dash>0?.28:.11;aura.scale.setScalar(p.dash>0?2.5:1.8);
-    for(const o of objects){const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.x=a.x;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
+    for(const o of objects){if(o.userData.floaty){o.position.y=o.userData.baseY+Math.sin(s.tick*.035+o.userData.phase)*7;o.rotation.y+=o.userData.spin||.005;o.rotation.z+=(o.userData.spin||.005)*.7;}const a=o.userData.source;if(a){if(a.got||a.alive===false)o.visible=false;if(a.type==='laser')o.visible=!!a.active;if(a.type==='moving'&&a.baseY!==undefined){o.position.y=540-(a.y??a.baseY)-a.h/2;o.position.x=(a.x??o.position.x-a.w/2)+a.w/2;}if(a.type==='coin'||a.type==='key'){o.rotation.y+=.06;o.position.x=a.x;o.position.y=540-(a.y??a.baseY??0)+Math.sin(s.tick*.08+(o.userData.phase||0))*3;}}}
     for(const g of platformMeshes){const p=g.userData.source;g.position.x=p.x+p.w/2;g.position.y=540-p.y-p.h/2;g.visible=!(p.crumbleGone>0);}
     for(const g of hazardMeshes){const h=g.userData.source;g.position.x=h.x+h.w/2;g.position.y=540-h.y-h.h/2;g.visible=h.type!=='laser'||!!h.active;g.rotation.z=h.type==='wind'?Math.sin(s.tick*.04+h.phase)*.08:0;g.traverse(child=>{if(child.geometry&&child.geometry.type==='SphereGeometry'&&child.userData.phase!==undefined)child.position.y=Math.sin(s.tick*.1+child.userData.phase)*3;});}
     for(const g of enemies){const e=g.userData.source;g.position.x=e.x+e.w/2;g.position.y=540-e.y-e.h/2;g.rotation.y=Math.sin(s.tick*.06+g.userData.phase)*.13;g.scale.y=1+Math.sin(s.tick*.15+g.userData.phase)*.035;g.visible=e.alive;}
