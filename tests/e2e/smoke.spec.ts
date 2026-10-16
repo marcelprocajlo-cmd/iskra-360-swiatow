@@ -1,0 +1,30 @@
+import { test, expect } from '@playwright/test';
+
+test('menu starts the first world and captures reference screenshots', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.goto('/');
+  const canvas = page.locator('#game-root canvas');
+  await expect(canvas).toBeVisible();
+  await expect(canvas).toHaveCount(1);
+  await page.screenshot({ path: 'docs/shots/menu.png' });
+  const bounds = await canvas.boundingBox();
+  expect(bounds).not.toBeNull();
+  if (!bounds) throw new Error('Canvas did not receive layout bounds');
+  await canvas.click({ position: { x: bounds.width * 0.125 + 120, y: bounds.height * 0.56 + 30 } });
+  await page.waitForTimeout(500);
+  await page.keyboard.down('ArrowRight');
+  await page.waitForTimeout(500);
+  await page.keyboard.up('ArrowRight');
+  await page.screenshot({ path: 'docs/shots/first-world.png' });
+  expect(pageErrors).toEqual([]);
+});
+
+test('touch controls are visible on a mobile-sized viewport', async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await page.goto('/');
+  await expect(page.locator('#game-root canvas')).toBeVisible();
+  await expect(page.locator('#touch-controls')).toBeVisible();
+  await expect(page.locator('[data-control="jump"]')).toBeVisible();
+  await page.close();
+});

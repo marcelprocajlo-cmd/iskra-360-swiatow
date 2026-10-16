@@ -17,3 +17,11 @@ jobs:
       - run: npm test
       - run: npm run lint
       - run: npm run validate:levels
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iskra-visual-smoke
+          path: docs/shots/*.png
+          if-no-files-found: ignore
