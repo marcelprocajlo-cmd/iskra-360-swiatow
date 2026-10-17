@@ -1,0 +1,3 @@
+import Phaser from 'phaser';import{createRng}from'../core/rng';
+/** Creates a tiny cached paper-grain tile once per game, never inside the render loop. */
+export function ensurePaperGrain(scene:Phaser.Scene):void{const key='iskra-paper-grain';if(scene.textures.exists(key))return;const g=scene.make.graphics({x:0,y:0},false),rng=createRng(0x15a7cafe);for(let i=0;i<720;i++){const x=rng()*128,y=rng()*128,r=.35+rng()*1.15;g.fillStyle(i%5===0?0xffd9a1:0xd6edff,.06+rng()*.14);g.fillCircle(x,y,r);}for(let i=0;i<42;i++){const x=rng()*128,y=rng()*128;g.lineStyle(.45,0xd9f8f4,.05+rng()*.08);g.lineBetween(x,y,x+2+rng()*8,y+(rng()-.5)*2);}g.generateTexture(key,128,128);g.destroy();}

@@ -1,56 +1,29 @@
 # ISKRA: 360 Światów
 
-Neonowa platformówka z animowanym rendererem 3D (Three.js) i awaryjnym trybem 2D Canvas. 360 poziomów, 12 biomów, walka, bossowie, kryształy, ulepszenia i osiągnięcia.
+Oryginalna, proceduralnie renderowana platformówka o Iskrze — ostatnim żywym okruchu Pierwszego Płomienia. Nowa wersja powstaje w **Phaser 3.90.0 + Vite + TypeScript strict**. Poprzednia wersja jest zachowana w `legacy/` jako referencja zachowania.
 
-## Uruchomienie
-Otwórz `index.html` w nowoczesnej przeglądarce. Gra nie wymaga zależności ani serwera. Konfiguracja Vercel nie oznacza sama w sobie, że projekt został wdrożony.
+## Wymagania
+Node.js >=22.12.0. Instalacja: `npm install`, uruchomienie: `npm run dev`.
 
-## Sterowanie
-- **A / D lub strzałki** — ruch.
-- **W / ↑ / Spacja** — skok; ponowne naciśnięcie w powietrzu wykonuje podwójny skok.
-- **X / Shift** — dash.
-- **Z / C** — atak wręcz.
-- **P / Escape** — pauza.
-- **Skok przy ścianie** — wall jump.
-- Na telefonie używaj przycisków ekranowych. Przycisk **Sterowanie** otwiera pomoc.
+## Polecenia
+- `npm run build` — ścisłe sprawdzenie typów i build do `dist/`
+- `npm test` — Vitest i regresje wersji legacy
+- `npm run lint` — ESLint
+- `npm run validate:levels` — walidacja struktury kampanii
+- `npm run preview` — podgląd buildu produkcyjnego
 
-## Modele 3D na planszy 2D
-- Platformówka, tła, platformy i pułapki pozostają w klasycznym widoku 2D.
-- Three.js renderuje jako przezroczystą nakładkę wyłącznie przestrzenny model Iskry, przeciwników, kryształów i portalu.
-- Iskra ma przegubowe kończyny, animację biegu i skoku, ruch głowy i anteny oraz efekt dashu.
-- Przycisk **Modele 3D: ON/OFF** przełącza modele 3D; oryginalny sprite 2D wraca po wyłączeniu. Tryb 3D wymaga CDN i WebGL.
+## Sterowanie w vertical slice
+Ruch: strzałki/A-D. Skok, podwójny skok i szybowanie: W/↑/Spacja. Dash: X/Shift. Atak testowy: Z/C. Pad: lewy drążek i przyciski twarzy. Telefon/tablet: duże przyciski dotykowe z safe-area.
 
-## Oprawa graficzna
-- Model Iskry z warstwowym pancerzem, anteną, rdzeniem, kończynami i efektami świetlnymi.
-- 12 wariantów panoram tła z paralaksą i charakterystycznymi kształtami biomów.
-- Rozbudowane sylwetki przeciwników i strażników oraz dopracowany interfejs.
+## Status
+Plan: `docs/PLAN.md`; Art Bible: `docs/ART_BIBLE.md`; historia: `docs/STORY.md`; projekt poziomów: `docs/LEVEL_DESIGN.md`. Nie deklarujemy jeszcze ukończonej kampanii ani wizualnej weryfikacji w prawdziwej przeglądarce. Etapy są raportowane jawnie.
 
-## Mechaniki
-- 360 poziomów w 12 biomach; strażnik krainy co 30 poziomów.
-- Ruch z przyspieszeniem, tarciem, buforem skoku i coyote time.
-- Platformy ruchome, sprężynowe, kruche i śliskie lodowe.
-- Kolce, lasery, pustynne strefy wiatru i lawa.
-- Walka wręcz, przeciwnicy, bossowie z punktami życia i nagrody.
-- Warsztat ulepszeń Dash / Skok / Osłona, każde do poziomu 3.
-- Pauza, sygnały dźwiękowe z przełącznikiem, pomoc i sterowanie dotykowe.
 
-## Zapis
-Postęp zapisuje się lokalnie pod `iskra360-save`; poprzednia kopia jest przechowywana pod `iskra360-save-backup`. Przycisk **Odzyskaj kopię** przywraca poprzedni zapis. Dane nie synchronizują się automatycznie między urządzeniami.
+## Rewrite preview status
 
-## Archiwum etapów
-Każdy ukończony etap ma osobny snapshot i raport:
-- [01 — stabilność](releases/etap-01-stabilnosc/)
-- [02 — walka i bossowie](releases/etap-02-walka-bossowie/)
-- [03 — progresja](releases/etap-03-progresja/)
-- [04 — światy](releases/etap-04-swiaty/)
-- [05 — interfejs](releases/etap-05-interfejs/)
-- [06 — osiągnięcia](releases/etap-06-osiagniecia/)
-- [07 — przygotowanie wydania](releases/etap-07-wydanie/)
-- [08 — oprawa graficzna i modelowanie](releases/etap-08-oprawa-graficzna/)
-- [09 — modele 3D i animacje](releases/etap-09-modele-3d/)
+The Phaser rewrite is on branch `feat/phaser-rewrite` and is **not deployed to a public URL yet**. Run locally with Node.js 22.12 or newer: `npm install`, then `npm run dev`. The quality workflow produces menu/gameplay/map screenshots as an artifact for review.
 
-## Kontrola jakości
-Wykonywano kontrolę składni JavaScript i testy obecności kluczowych funkcji. Etap 07 obejmuje też test automatyczny na atrapach DOM/Canvas oraz przełączenie wszystkich 360 poziomów. To nie zastępuje testu w prawdziwej przeglądarce ani na telefonie; listę testów opisuje `TEST_PLAN.md`.
 
-## Stack
-HTML, CSS, JavaScript, Canvas 2D dla planszy oraz Three.js 0.160 z CDN do nakładki modeli 3D.
+## Phaser rewrite status
+
+The rewrite is on `feat/phaser-rewrite` and is not deployed to a public URL yet. Run locally with Node.js 22.12 or newer: `npm install`, then `npm run dev`. The CI workflow builds the game, runs unit/regression/lint/level validation and Playwright smoke checks, and uploads screenshots as an artifact. See `docs/PLAN.md` and `REVIEW.md` for implemented scope and remaining work.

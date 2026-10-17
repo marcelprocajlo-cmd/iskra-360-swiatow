@@ -1,0 +1,8 @@
+export type QualityMode='low'|'medium'|'high';
+export interface GameSettings{language:'pl'|'en';quality:QualityMode;reducedMotion:boolean;masterVolume:number;musicVolume:number;sfxVolume:number;}
+export const SETTINGS_KEY='iskra360-settings';
+export const DEFAULT_SETTINGS:GameSettings={language:'pl',quality:'high',reducedMotion:false,masterVolume:.8,musicVolume:.35,sfxVolume:.7};
+const volume=(value:unknown,fallback:number):number=>typeof value==='number'&&Number.isFinite(value)?Math.max(0,Math.min(1,value)):fallback;
+export function sanitizeSettings(value:unknown):GameSettings{if(!value||typeof value!=='object'||Array.isArray(value))return{...DEFAULT_SETTINGS};const raw=value as Record<string,unknown>;return{language:raw.language==='en'?'en':'pl',quality:raw.quality==='low'||raw.quality==='medium'||raw.quality==='high'?raw.quality:'high',reducedMotion:raw.reducedMotion===true,masterVolume:volume(raw.masterVolume,DEFAULT_SETTINGS.masterVolume),musicVolume:volume(raw.musicVolume,DEFAULT_SETTINGS.musicVolume),sfxVolume:volume(raw.sfxVolume,DEFAULT_SETTINGS.sfxVolume)};}
+export function loadSettings(storage?:Pick<Storage,'getItem'|'setItem'>):GameSettings{try{const target=storage??localStorage;const raw=target.getItem(SETTINGS_KEY);if(raw)return sanitizeSettings(JSON.parse(raw) as unknown);}catch{/* Damaged or unavailable storage falls back to defaults. */}return{...DEFAULT_SETTINGS};}
+export function saveSettings(settings:GameSettings,storage?:Pick<Storage,'getItem'|'setItem'>):void{try{const target=storage??localStorage;target.setItem(SETTINGS_KEY,JSON.stringify(sanitizeSettings(settings)));}catch{/* Private browsing may disallow persistence; settings still work for this session. */}}

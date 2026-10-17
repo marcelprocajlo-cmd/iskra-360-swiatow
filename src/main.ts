@@ -1,0 +1,13 @@
+import Phaser from 'phaser';
+import './style.css';
+import { BootScene } from './scenes/BootScene';
+import { MainMenuScene } from './scenes/MainMenuScene';
+import { WorldScene } from './scenes/WorldScene';
+import { GameOverScene } from './scenes/GameOverScene';
+import { WorldMapScene } from './scenes/WorldMapScene';
+import { SettingsScene } from './scenes/SettingsScene';
+import { VictoryScene } from './scenes/VictoryScene';
+const errorPanel=document.querySelector<HTMLDivElement>('#runtime-error');
+window.addEventListener('error',(event)=>{if(!errorPanel)return;errorPanel.hidden=false;errorPanel.textContent=`Gra napotkała błąd. Odśwież stronę; jeśli problem wróci, przekaż komunikat: ${event.message}`;});
+const game=new Phaser.Game({type:Phaser.AUTO,parent:'game-root',width:1280,height:720,backgroundColor:'#080b19',antialias:true,powerPreference:'high-performance',render:{roundPixels:false,antialias:true,pixelArt:false,transparent:false},scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,width:1280,height:720},fps:{target:60,forceSetTimeOut:false,smoothStep:false},input:{gamepad:true,activePointers:4},audio:{noAudio:true},scene:[BootScene,MainMenuScene,WorldScene,WorldMapScene,SettingsScene,GameOverScene,VictoryScene]});
+window.addEventListener('pagehide',()=>game.destroy(true));
