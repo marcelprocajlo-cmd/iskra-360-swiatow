@@ -1,3 +1,11 @@
+## 2026-10-17 — Robot Iskra i czytelniejsza walka
+
+- Przebudowano rysowanie Iskry na opancerzonego robota z wizjerem, sensorami i warstwowym, świecącym rdzeniem energii.
+- Wzmocniono czytelność ataków: łuki cięcia, jasny ślad energetyczny i mocniejsze fale uderzeniowe przy atakach naładowanych oraz finisherach.
+- Dodano celowane pociski bossów z sygnałem ostrzegawczym i szybszym ostrzałem w kolejnych fazach.
+- Zróżnicowano obrażenia kontaktowe przeciwników i zablokowano wyjście do czasu pokonania wszystkich wrogów.
+- CI: build, testy, lint, walidacja poziomów i testy przeglądarkowe zakończone powodzeniem. Fizyka przegubowa robota, testy balansu i pomiar FPS pozostają otwarte.
+
 ## 2026-10-16 — Pełny tryb 3D i poprawa sterowania
 
 - Usunięto przełącznik renderowania 2D/3D; prezentacja gry pozostaje w trybie 3D.
