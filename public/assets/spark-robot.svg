@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="600" viewBox="0 0 512 600" fill="none">
+  <defs>
+    <linearGradient id="shell" x1="94" y1="91" x2="397" y2="489" gradientUnits="userSpaceOnUse"><stop stop-color="#F5F7EE"/><stop offset=".22" stop-color="#AFC4CE"/><stop offset=".48" stop-color="#526E85"/><stop offset=".75" stop-color="#263D55"/><stop offset="1" stop-color="#13253B"/></linearGradient>
+    <linearGradient id="lightShell" x1="168" y1="183" x2="340" y2="376" gradientUnits="userSpaceOnUse"><stop stop-color="#E9F3EE"/><stop offset=".34" stop-color="#A2BCC4"/><stop offset=".7" stop-color="#547489"/><stop offset="1" stop-color="#283E56"/></linearGradient>
+    <linearGradient id="visor" x1="161" y1="83" x2="341" y2="181" gradientUnits="userSpaceOnUse"><stop stop-color="#B7FFF5"/><stop offset=".18" stop-color="#42D9DC"/><stop offset=".55" stop-color="#126B85"/><stop offset="1" stop-color="#102C49"/></linearGradient>
+    <linearGradient id="gold" x1="250" y1="271" x2="288" y2="344" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF3B7"/><stop offset=".28" stop-color="#FFD47A"/><stop offset=".72" stop-color="#F18443"/><stop offset="1" stop-color="#853E3C"/></linearGradient>
+    <linearGradient id="joint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E5F7EF"/><stop offset=".42" stop-color="#65889A"/><stop offset="1" stop-color="#1A3048"/></linearGradient>
+    <radialGradient id="core" cx="0" cy="0" r="1" gradientTransform="matrix(0 41 -41 0 268 306)" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF9D5"/><stop offset=".35" stop-color="#FFD975"/><stop offset=".7" stop-color="#FF9C4C"/><stop offset="1" stop-color="#AF4D40"/></radialGradient>
+    <filter id="softShadow" x="88" y="35" width="346" height="545" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+  <ellipse cx="267" cy="550" rx="132" ry="21" fill="#061426" fill-opacity=".3" filter="url(#softShadow)"/>
+  <!-- rear calf and planted boot -->
+  <path d="m216 391-47 75 14 57 53 9 21-26-30-29 37-58-48-28Z" fill="url(#shell)" stroke="#11243A" stroke-width="11" stroke-linejoin="round"/>
+  <path d="m181 491-30 25-5 26 16 18 77 1 13-13-17-20-36-13-18-24Z" fill="url(#lightShell)" stroke="#13263D" stroke-width="10" stroke-linejoin="round"/>
+  <path d="m181 519 39 13 17 17m-80-8 99 1" stroke="#6E8C9A" stroke-width="6" stroke-linecap="round"/>
+  <!-- far arm, with visible elbow and fingers -->
+  <path d="m333 219 50 34 30 64-20 23-33-19-31-49-41-21 45-32Z" fill="url(#shell)" stroke="#14273D" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="399" cy="325" r="20" fill="url(#joint)" stroke="#14273D" stroke-width="9"/>
+  <path d="m402 339 23 27-8 17-18-8-9 19-18-7 10-29 20-19Z" fill="url(#lightShell)" stroke="#14273D" stroke-width="9" stroke-linejoin="round"/>
+  <!-- head: compact helmet with a glass faceplate and side audio modules -->
+  <path d="M145 91c0-43 35-77 78-77h66c47 0 84 38 84 85v59c0 47-38 85-85 85h-61c-46 0-82-37-82-83V91Z" fill="url(#shell)" stroke="#14273D" stroke-width="13"/>
+  <path d="M165 91c0-29 24-53 53-53h67c35 0 63 28 63 63v51c0 32-26 58-58 58h-69c-31 0-56-25-56-56V91Z" fill="url(#visor)" stroke="#D8F8EF" stroke-opacity=".72" stroke-width="7"/>
+  <path d="M180 92c4-22 21-37 43-40m-31 56c10-21 29-35 52-38" stroke="#E4FFFF" stroke-opacity=".7" stroke-width="8" stroke-linecap="round"/>
+  <path d="M216 114c13-14 34-16 49-4m20 3c12-10 27-9 37 2" stroke="#8AFFF1" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="245" cy="139" rx="13" ry="19" fill="#E9FFEB"/><ellipse cx="316" cy="139" rx="12" ry="18" fill="#E9FFEB"/>
+  <ellipse cx="250" cy="142" rx="6" ry="11" fill="#0D2A43"/><ellipse cx="319" cy="142" rx="5" ry="10" fill="#0D2A43"/>
+  <circle cx="246" cy="134" r="4" fill="#FFF"/><circle cx="315" cy="134" r="4" fill="#FFF"/>
+  <path d="M267 166c12 9 25 9 37-1" stroke="#AFFFF0" stroke-width="5" stroke-linecap="round"/>
+  <path d="m153 96-26 17 1 39 31 13m215-67 24 18-2 41-29 12" fill="url(#lightShell)" stroke="#14273D" stroke-width="11" stroke-linejoin="round"/>
+  <circle cx="143" cy="134" r="12" fill="#FFCC73" stroke="#263E55" stroke-width="6"/><circle cx="381" cy="134" r="12" fill="#67F4E7" stroke="#263E55" stroke-width="6"/>
+  <path d="m248 13-2-12m0 0 13 5m-13-5-8 10" stroke="#9CC3C6" stroke-width="6" stroke-linecap="round"/>
+  <!-- torso with overlapping armor plates and an inset energy lens -->
+  <path d="m188 211 51-19 78 5 50 36 22 115-32 77-40 22-106-12-52-41-13-102 42-81Z" fill="url(#shell)" stroke="#14273D" stroke-width="14" stroke-linejoin="round"/>
+  <path d="m206 231 44-20 58 5 38 27 16 92-25 57-45 23-78-9-37-29-10-79 39-67Z" fill="url(#lightShell)" stroke="#BBD8D9" stroke-opacity=".58" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m213 239 34-17 10 23-21 28-33 3 10-37Zm101-12 35 24 6 38-23-9-19-30 1-23Z" fill="#F3F2DF" fill-opacity=".78"/>
+  <path d="m215 318 37-34 53 2 34 31-17 56-39 23-53-7-25-24 10-47Z" fill="#203951" stroke="#12263D" stroke-width="8" stroke-linejoin="round"/>
+  <circle cx="269" cy="321" r="38" fill="#0D263D" stroke="#B5DBD8" stroke-width="7"/>
+  <circle cx="269" cy="321" r="28" fill="url(#core)" stroke="#FFE5A0" stroke-width="4"/>
+  <path d="M252 306c6-9 15-13 24-12" stroke="#FFF9D7" stroke-width="7" stroke-linecap="round"/>
+  <path d="m225 283 18-12m61 3 17 13m-93 55 18 9m56 9 18-12" stroke="#6F9AA4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M246 384h45m-47 13 47 4" stroke="#152D45" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="218" cy="306" r="5" fill="#FFDA87"/><circle cx="322" cy="306" r="5" fill="#72F6E6"/>
+  <!-- near arm and articulated shoulder -->
+  <path d="m188 228-48 28-18 53 29 25 38-24 27-44 27-12-24-39-31 13Z" fill="url(#shell)" stroke="#14273D" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="137" cy="311" r="22" fill="url(#joint)" stroke="#14273D" stroke-width="9"/>
+  <path d="m122 327-16 48 8 33 24 10 18-19-12-30 12-25-34-17Z" fill="url(#lightShell)" stroke="#14273D" stroke-width="10" stroke-linejoin="round"/>
+  <path d="m113 383-11 26 9 19 23 2 14-13-8-23" fill="url(#shell)" stroke="#14273D" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m143 350 17 8m-24 4 18 8" stroke="#82A9AE" stroke-width="5" stroke-linecap="round"/>
+  <!-- near leg, exposed piston, ankle and reinforced boot -->
+  <path d="m290 411 69-4 20 58-25 56-50-5-17-32 20-37-17-36Z" fill="url(#shell)" stroke="#14273D" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="326" cy="443" r="19" fill="url(#joint)" stroke="#14273D" stroke-width="8"/>
+  <path d="m347 463 25 42-11 36-9 24-57 12-19-15 16-22 32-13-8-34 31-30Z" fill="url(#lightShell)" stroke="#14273D" stroke-width="11" stroke-linejoin="round"/>
+  <path d="m306 544 40-10 20 9 9 20-14 16-91 2-8-13 16-17 28-7Z" fill="url(#shell)" stroke="#14273D" stroke-width="10" stroke-linejoin="round"/>
+  <path d="m285 563 82-2m-59-24 18-11m-102-23 24-22m-58 68 56 5" stroke="#8CB2B9" stroke-width="6" stroke-linecap="round"/>
+  <!-- little service lights and fasteners make the armor feel assembled -->
+  <circle cx="199" cy="261" r="5" fill="#FFD77E"/><circle cx="343" cy="270" r="5" fill="#72F6E6"/><circle cx="189" cy="351" r="4" fill="#E8F8EB"/><circle cx="353" cy="351" r="4" fill="#E8F8EB"/>
+</svg>
