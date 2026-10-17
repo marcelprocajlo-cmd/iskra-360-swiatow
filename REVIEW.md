@@ -34,3 +34,5 @@ Run locally with Node.js 22.12+: `npm install && npm run dev`.
 ## Visual review — 2026-10-17
 
 Reviewed the CI screenshots for the menu, first level and world map. The menu palette is coherent, but the large star looks like a placeholder. Platform-top triangles read as spikes even on safe ground, so they have been replaced with short rounded inlays. Level tiles on the world map were too close to the card edge and have been moved inward. The updated screenshots still need a fresh browser review after CI completes; this is not yet a full art-direction or real-device review.
+
+The title screen's generic rotating star has also been replaced with a simple vector Spark mascot matching the in-game glowing core and flame tail. Review its fresh screenshot before treating the art direction as final.
