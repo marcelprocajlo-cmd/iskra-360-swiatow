@@ -22,9 +22,31 @@ const routeBlueprints:number[][]=[
   [3,6,9,0,5,8,11,2],[7,10,1,4,8,11,2,5],[11,2,5,9,12,3,6,10],[0,4,8,11,1,5,9,12],[4,8,12,2,6,10,1,5],
   [8,12,3,7,11,2,6,9],[12,1,5,8,0,4,10,3],[2,6,10,0,3,7,11,4],[6,10,1,5,9,12,3,7],[10,2,6,9,12,1,5,8]
 ];
+const upperRouteBlueprints:{anchors:number[];lifts:number[];widths:number[];offsets:number[];kinds:PlatformData['kind'][]}[]=[
+  {anchors:[1,3,5,7],lifts:[132,188,224,164],widths:[148,116,104,142],offsets:[.08,.36,.18,.46],kinds:['stone','bounce','moving','stone']},
+  {anchors:[1,2,4,6,7],lifts:[150,208,238,194,142],widths:[176,128,102,126,164],offsets:[.1,.46,.2,.44,.1],kinds:['moving','stone','crumble','stone','bounce']},
+  {anchors:[2,4,6],lifts:[196,236,182],widths:[196,118,186],offsets:[.36,.2,.08],kinds:['bounce','moving','stone']},
+  {anchors:[1,3,4,6,7],lifts:[126,174,226,212,156],widths:[128,110,142,106,178],offsets:[.4,.1,.44,.14,.36],kinds:['crumble','stone','bounce','moving','stone']},
+  {anchors:[1,2,3,5,7],lifts:[148,204,232,208,160],widths:[164,122,106,124,168],offsets:[.12,.42,.12,.42,.12],kinds:['stone','moving','crumble','bounce','stone']},
+  {anchors:[1,3,5,7],lifts:[214,168,218,156],widths:[112,176,106,182],offsets:[.38,.08,.4,.1],kinds:['crumble','moving','stone','bounce']},
+  {anchors:[1,2,4,5,7],lifts:[130,196,234,176,142],widths:[186,116,102,142,174],offsets:[.08,.4,.14,.44,.08],kinds:['stone','bounce','moving','crumble','stone']},
+  {anchors:[1,3,4,6,7],lifts:[156,226,188,232,150],widths:[138,106,152,102,176],offsets:[.4,.1,.42,.12,.4],kinds:['moving','crumble','stone','bounce','stone']},
+  {anchors:[1,2,3,4,6,7],lifts:[142,188,228,238,194,154],widths:[166,126,108,100,124,178],offsets:[.08,.42,.12,.4,.1,.42],kinds:['stone','moving','bounce','crumble','moving','stone']},
+  {anchors:[1,3,5,7],lifts:[176,236,166,214],widths:[182,104,178,108],offsets:[.08,.42,.08,.42],kinds:['bounce','crumble','stone','moving']},
+  {anchors:[1,2,4,6,7],lifts:[144,222,172,236,148],widths:[172,104,166,102,184],offsets:[.1,.42,.1,.4,.08],kinds:['moving','stone','bounce','crumble','stone']},
+  {anchors:[1,3,4,5,7],lifts:[132,184,236,206,158],widths:[154,116,100,122,176],offsets:[.42,.1,.4,.1,.42],kinds:['stone','crumble','moving','bounce','stone']},
+  {anchors:[1,2,3,5,6,7],lifts:[160,214,236,202,232,146],widths:[178,118,102,126,106,188],offsets:[.08,.38,.08,.4,.1,.42],kinds:['crumble','moving','stone','bounce','moving','stone']},
+  {anchors:[1,3,5,7],lifts:[202,148,226,166],widths:[112,184,104,178],offsets:[.38,.08,.4,.08],kinds:['bounce','stone','crumble','moving']},
+  {anchors:[1,2,4,6,7],lifts:[136,198,232,184,152],widths:[184,122,104,132,176],offsets:[.08,.4,.12,.42,.1],kinds:['stone','moving','crumble','bounce','stone']},
+  {anchors:[1,3,4,5,7],lifts:[174,232,198,236,146],widths:[146,104,130,102,190],offsets:[.4,.1,.42,.1,.4],kinds:['moving','bounce','stone','crumble','stone']},
+  {anchors:[1,2,3,5,6,7],lifts:[148,218,232,184,236,156],widths:[176,112,104,142,102,182],offsets:[.08,.42,.1,.4,.1,.42],kinds:['stone','crumble','bounce','moving','crumble','stone']},
+  {anchors:[1,3,5,7],lifts:[132,204,238,176],widths:[188,112,100,176],offsets:[.08,.4,.12,.42],kinds:['crumble','stone','moving','bounce']},
+  {anchors:[1,2,4,5,7],lifts:[166,236,188,232,144],widths:[166,100,138,106,192],offsets:[.4,.1,.42,.1,.4],kinds:['bounce','moving','crumble','stone','moving']},
+  {anchors:[1,3,4,6,7],lifts:[142,214,236,184,158],widths:[180,108,100,136,176],offsets:[.08,.4,.12,.42,.08],kinds:['stone','moving','bounce','crumble','stone']}
+];
 function buildLevel(wi:number,li:number):LevelData{
   const world=baseWorlds[wi]!,id=world.id+'-'+(li+1),title=titles[wi]![li]!,platforms:PlatformData[]=[];
-  const segmentWidth=4300,route=routeBlueprints[wi*5+li]!;
+  const segmentWidth=4300,route=routeBlueprints[wi*5+li]!,upperRoute=upperRouteBlueprints[wi*5+li]!;
   for(let segment=0;segment<8;segment++){
     const source=layouts[route[segment]!]!,offset=segment*segmentWidth;
     const part=source.map((p,i)=>({...p,
@@ -45,9 +67,9 @@ function buildLevel(wi:number,li:number):LevelData{
       }
     }
     if((li+wi+segment)%2===0)part.push({x:part[3]!.x+part[3]!.width+35,y:405,width:118,height:18,kind:'stone'},{x:part[4]!.x+145,y:365,width:104,height:18,kind:'falling'});
-    for(let layer=0;layer<4;layer++){
-      const anchor=part[1+layer*2]!,lift=128+((li+wi+segment+layer)%3)*18;
-      part.push({x:Math.round(anchor.x+anchor.width*.42),y:Math.max(325,anchor.y-lift),width:118+(layer%2)*22,height:18,kind:(['bounce','moving','crumble','stone'] as const)[(layer+segment+wi)%4]!});
+    for(let layer=0;layer<upperRoute.anchors.length;layer++){
+      const anchor=part[upperRoute.anchors[layer]!]!,lift=Math.min(190,upperRoute.lifts[layer]!+Math.sin(segment*1.25+layer+wi)*12);
+      part.push({x:Math.round(anchor.x+anchor.width*upperRoute.offsets[layer]!),y:Math.max(305,Math.min(420,Math.round(anchor.y-lift))),width:upperRoute.widths[layer]!,height:18,kind:upperRoute.kinds[(layer+segment)%upperRoute.kinds.length]!});
     }
     platforms.push(...part);
   }
