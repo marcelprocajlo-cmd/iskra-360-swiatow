@@ -35,7 +35,7 @@ export class WorldMapScene extends Phaser.Scene {
         const globalIndex = worldIndex * 5 + level.index;
         const unlocked = globalIndex <= save.unlockedLevel;
         const completed = save.completedLevels.includes(globalIndex);
-        const bx = x + 22 + (level.index - 1) * 101;
+        const bx = x + 58 + (level.index - 1) * 103;
         const by = y + 105;
         const color = completed ? 0x245f5a : unlocked ? 0x213653 : 0x121a2e;
         const node = this.add.container(bx, by);
